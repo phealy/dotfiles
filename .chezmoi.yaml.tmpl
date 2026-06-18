@@ -1,0 +1,28 @@
+{{- $machineTypes := list "personal" "work" -}}
+{{- $machineTypeDefault := "" -}}
+{{- if eq .chezmoi.username "phealy" -}}
+    {{- $machineTypeDefault = "personal" -}}
+{{- else if eq .chezmoi.username "pahealy" -}}
+    {{- $machineTypeDefault = "work" -}}
+{{- end -}}
+{{- $machineType := promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes $machineTypeDefault -}}
+{{- $email := "" -}}
+{{- if eq $machineType "personal" -}}
+    {{- $email = "phealy@phealy.com" -}}
+{{- else -}}
+    {{- $email = "patrick.healy@microsoft.com" -}}
+{{- end -}}
+chezmoi:
+    progress: true
+    add:
+        secrets: error
+data:
+    machineType: {{ $machineType | quote }}
+    name: "Patrick W. Healy"
+    email: {{ $email | quote }}
+{{ if eq .machineType "work" }}    goTools:
+        - name: github.com/phealy/git-credential-azure-cli
+          version: v0.1.4
+          goproxy: false
+          goauth: false
+{{- end -}}

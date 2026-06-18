@@ -1,0 +1,35 @@
+[colors.bright]
+black = "0x696969"
+blue = "0x007FFF"
+cyan = "0x00CCCC"
+green = "0x03C03C"
+magenta = "0xFF1493"
+red = "0xFF2400"
+white = "0xFFFAFA"
+yellow = "0xFDFF00"
+
+[colors.normal]
+black = "0x000000"
+blue = "0x0087BD"
+cyan = "0x20B2AA"
+green = "0x009F6B"
+magenta = "0x9A4EAE"
+red = "0xC40233"
+white = "0xC6C6C4"
+yellow = "0xFFD700"
+
+[colors.primary]
+background = "0x000000"
+foreground = "0xC6C6C4"
+
+[font]
+size = 12.0
+
+[font.normal]
+family = "CaskaydiaCove NF"
+
+[window]
+decorations = "None"
+dynamic_padding = true
+dimensions = { columns = 132, lines = 48 }
+startup_mode = "Maximized"

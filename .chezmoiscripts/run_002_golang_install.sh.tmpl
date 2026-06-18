@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.os "linux" -}}
+#! /bin/bash
+
+# Install missing go tools into current go version
+{{ range .goTools -}}
+{{ if not .goauth }}GOAUTH="" {{ end }}{{ if not .goproxy }}GOPROXY="" {{ end }}go install {{ .name }}@{{ .version }}
+{{ end -}}
+asdf reshim
+{{ end -}}

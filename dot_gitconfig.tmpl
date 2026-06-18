@@ -1,0 +1,12 @@
+[user]
+	email = {{ .email }}
+	name = {{ .name }}
+[push]
+	default = simple
+[submodule]
+	recurse = true
+[init]
+	defaultBranch = main
+[credential]
+	helper = cache
+{{- if eq .machineType "work" }}{{ "\n\thelper = git-credential-azure-cli" }}{{ end }}

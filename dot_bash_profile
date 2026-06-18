@@ -1,0 +1,3 @@
+[ -f $HOME/.bashrc ] && source $HOME/.bashrc
+
+# vim:foldmethod=marker:foldlevel=0:syntax=sh filetype=sh
