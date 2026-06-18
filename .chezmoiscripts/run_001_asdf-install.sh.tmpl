@@ -1,20 +1,31 @@
 {{- if eq .chezmoi.os "linux" -}}
-{{- $toolVersionsFile := joinPath .chezmoi.sourceDir (print  "dot_tool-versions_" .machineType) -}}
-{{- $versions := (include $toolVersionsFile | replaceAllRegex "([-._A-Za-z0-9]+) ([-._A-Za-z0-9]+)" "${1}=\"${2}\"" | fromToml) -}}
 #! /bin/bash
-{{ range ( keys $versions | sortAlpha ) }}
-# Install {{ . }} asdf plugin and version
-asdf plugin list | grep -qx "{{ . }}" || {
-    printf "asdf: Installing plugin {{ . }}...\n"
-    asdf plugin add "{{ . }}" 2>&1 | sed -e "s/^/asdf: plugin add> /g"
+{{ range $name, $value := .asdf }}
+# Install {{ $name }} asdf plugin and version
+asdf plugin list | grep -qx "{{ $name }}" || {
+    printf "asdf: Installing plugin {{ $name }}...\n"
+    asdf plugin add "{{ $name }}" "{{ get $value "url" }}" 2>&1 | sed -e "s/^/asdf: plugin add {{ $name }}> /g"
 }
-asdf list "{{ . }}" | grep -q "{{ index $versions . }}" || {
-    printf "asdf: Installing tool version {{ . }} {{ index $versions . }}...\n"
-    asdf install "{{ . }}" "{{ index $versions . }}" 2>&1 | sed -e "s/^/asdf: install {{ . }} {{ index $versions . }}> /g"
+{{- if ne (get $value "version") "" }}
+asdf list "{{ $name }}" | grep -q "{{ get $value "version" }}" || {
+    printf "asdf: Installing tool version {{ $name }} {{ $value.version }}...\n"
+    asdf install "{{ $name }}" "{{ $value.version }}" 2>&1 | sed -e "s/^/asdf: install {{ $name }} {{ $value.version }}> /g"
+    asdf set -u "{{ $name }}" "{{ $value.version }}"
 }
-for oldVersion in $(asdf list "{{ . }}" | grep -v "{{ index $versions . }}" | sed -e "s/[ \*]//g"); do
-    printf "Removing old tool version {{ . }} ${oldVersion}...\n"
-    asdf uninstall "{{ . }}" "$oldVersion" 2>&1 | sed -e "s/^/asdf: uninstall {{ . }} ${oldVersion}> /g"
+{{ else }}
+asdf list "{{ $name }}" 2>&1 | grep -q "No compatible versions installed" && {
+    version="$(asdf list all '{{ $name }}' | sort -V | tail -n 1)"
+    printf "asdf: Installing tool version {{ $name }} ${version}...\n"
+    asdf install "{{ $name }}" "${version}" 2>&1 | sed -e "s/^/asdf: install {{ $name }} ${version}> /g"
+    asdf set -u "{{ $name }}" "${version}"
+}
+{{- end }}
+{{- if or (not (hasKey $value "deleteOldVersions")) (default (get $value "deleteOldVersions") false) }}
+for oldVersion in $(asdf list "{{ $name }}" | grep -v "{{ get $value "version" }}" | sed -e "s/[ \*]//g"); do
+    printf "Removing old tool version {{ $name }} ${oldVersion}...\n"
+    asdf uninstall "{{ $name }}" "$oldVersion" 2>&1 | sed -e "s/^/asdf: uninstall {{ $name }} ${oldVersion}> /g"
 done
 {{ end }}
-{{- end -}}
+{{- end }}
+asdf reshim
+{{ end -}}

@@ -13,3 +13,4 @@ kubelogin 0.2.18
 powershell-core 7.6.3
 stern 1.34.0
 yq 4.53.3
+ohmyposh 29.17.0

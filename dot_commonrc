@@ -136,7 +136,7 @@ command -v chezmoi &>/dev/null && {
     alias cmap='chezmoi apply'
     alias cmapr='chezmoi apply -R'
     alias cmat='chezmoi add -T'
-    alias cmcd='chezmoi cd'
+    alias cmcd='cd "$(chezmoi source-path)"'
     alias cmd='chezmoi diff'
     alias cme='chezmoi edit --init --watch'
     alias cmet='chezmoi execute-template "$@"'
@@ -150,6 +150,7 @@ command -v chezmoi &>/dev/null && {
     alias cmra='chezmoi re-add'
     alias cmu='chezmoi update --init'
     alias cmur='chezmoi update -R --init'
+}
 # }}}
 # aliases {{{
 alias auu="sudo apt update && sudo apt upgrade"

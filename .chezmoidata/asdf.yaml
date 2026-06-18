@@ -1,0 +1,35 @@
+asdf:
+    azure-cli:
+        url: https://github.com/EcoMind/asdf-azure-cli.git
+    chezmoi:
+        url: https://github.com/joke/asdf-chezmoi.git
+    direnv:
+        url: https://github.com/asdf-community/asdf-direnv.git
+    fzf:
+        url: https://github.com/kompiro/asdf-fzf.git
+    github-cli:
+        url: https://github.com/bartlomiejdanek/asdf-github-cli.git
+    golang:
+        url: https://github.com/asdf-community/asdf-golang.git
+        deleteOldVersions: true
+    helm:
+        url: https://github.com/Antiarchitect/asdf-helm.git
+    k9s:
+        url: https://github.com/looztra/asdf-k9s.git
+    krew:
+        url: https://github.com/bjw-s/asdf-krew.git
+    kubectl:
+        url: https://github.com/asdf-community/asdf-kubectl.git
+    kubelogin:
+        url: https://github.com/sechmann/asdf-kubelogin.git
+    ohmyposh:
+        url: https://github.com/splinter98/asdf-ohmyposh.git
+    powershell-core:
+        url: https://github.com/daveneeley/asdf-powershell-core.git
+    python:
+        url: https://github.com/danhper/asdf-python.git
+        deleteOldVersions: false
+    stern:
+        url: https://github.com/looztra/asdf-stern.git
+    yq:
+        url: https://github.com/sudermanjr/asdf-yq.git
