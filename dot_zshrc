@@ -1,0 +1,195 @@
+# start tmux {{{
+[[ $- == *i* && -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && exec $HOME/.local/bin/tmx
+# }}}
+# Set path to require unique entries {{{
+typeset -Ug path PATH
+# }}}
+# Remove WSL directories from PATH temporarily {{{
+if [[ ! -z "${WSL_INTEROP}" ]]; then
+  declare -a WSLPATHS
+  WSLPATHS=$(mount | awk '/9p/ { print $3 }')
+  FULLPATH="$PATH"
+  PATH=${(j.:.)path:#*/[a-z]/*}
+fi
+# }}}
+# azure cloud shell {{{
+[[ ! -z "$AZURE_HTTP_USER_AGENT" ]] && {
+    source /usr/bin/cloudshellhelp
+}
+# }}}
+# vi mode {{{
+bindkey -v
+# }}}
+# dracula zsh-syntax-highlighting {{{
+# Dracula Theme (for zsh-syntax-highlighting)
+#
+# https://github.com/zenorocha/dracula-theme
+#
+# Copyright 2021, All rights reserved
+#
+# Code licensed under the MIT license
+# http://zenorocha.mit-license.org
+#
+# @author George Pickering <@bigpick>
+# @author Zeno Rocha <hi@zenorocha.com>
+# Paste this files contents inside your ~/.zshrc before you activate zsh-syntax-highlighting
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor)
+typeset -gA ZSH_HIGHLIGHT_STYLES
+# Default groupings per, https://spec.draculatheme.com, try to logically separate
+# possible ZSH_HIGHLIGHT_STYLES settings accordingly...?
+#
+# Italics not yet supported by zsh; potentially soon:
+#    https://github.com/zsh-users/zsh-syntax-highlighting/issues/432
+#    https://www.zsh.org/mla/workers/2021/msg00678.html
+# ... in hopes that they will, labelling accordingly with ,italic where appropriate
+#
+# Main highlighter styling: https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md
+#
+## General
+### Diffs
+### Markup
+## Classes
+## Comments
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#6272A4'
+## Constants
+## Entitites
+## Functions/methods
+ZSH_HIGHLIGHT_STYLES[alias]='fg=#50FA7B'
+ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#50FA7B'
+ZSH_HIGHLIGHT_STYLES[global-alias]='fg=#50FA7B'
+ZSH_HIGHLIGHT_STYLES[function]='fg=#50FA7B'
+ZSH_HIGHLIGHT_STYLES[command]='fg=#50FA7B'
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=#50FA7B,italic'
+ZSH_HIGHLIGHT_STYLES[autodirectory]='fg=#FFB86C,italic'
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=#FFB86C'
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=#FFB86C'
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=#BD93F9'
+## Keywords
+## Built ins
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=#8BE9FD'
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#8BE9FD'
+ZSH_HIGHLIGHT_STYLES[hashed-command]='fg=#8BE9FD'
+## Punctuation
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#FF79C6'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter-unquoted]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument-delimiter]='fg=#FF79C6'
+ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]='fg=#FF79C6'
+ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]='fg=#FF79C6'
+## Serializable / Configuration Languages
+## Storage
+## Strings
+ZSH_HIGHLIGHT_STYLES[command-substitution-quoted]='fg=#F1FA8C'
+ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter-quoted]='fg=#F1FA8C'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#F1FA8C'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument-unclosed]='fg=#FF5555'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#F1FA8C'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument-unclosed]='fg=#FF5555'
+ZSH_HIGHLIGHT_STYLES[rc-quote]='fg=#F1FA8C'
+## Variables
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument-unclosed]='fg=#FF5555'
+ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[assign]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[named-fd]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[numeric-fd]='fg=#F8F8F2'
+## No category relevant in spec
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#FF5555'
+ZSH_HIGHLIGHT_STYLES[path]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[path_pathseparator]='fg=#FF79C6'
+ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]='fg=#FF79C6'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=#BD93F9'
+#ZSH_HIGHLIGHT_STYLES[command-substitution]='fg=?'
+#ZSH_HIGHLIGHT_STYLES[command-substitution-unquoted]='fg=?'
+#ZSH_HIGHLIGHT_STYLES[process-substitution]='fg=?'
+#ZSH_HIGHLIGHT_STYLES[arithmetic-expansion]='fg=?'
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument-unclosed]='fg=#FF5555'
+ZSH_HIGHLIGHT_STYLES[redirection]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[arg0]='fg=#F8F8F2'
+ZSH_HIGHLIGHT_STYLES[default]='fg=#F8F8F2'
+# }}}
+# oh-my-zsh {{{
+export ZSH="$HOME/.local/lib/oh-my-zsh"
+export ZSH_CUSTOM="$HOME/.local/lib/oh-my-zsh-custom"
+export FZF_BASE="$HOME/.local/lib/fzf"
+CASE_SENSITIVE="true"
+COMPLETION_WAITING_DOTS="false"
+DISABLE_AUTO_UPDATE=true
+DISABLE_MAGIC_FUNCTIONS=true
+DISABLE_UNTRACKED_FILES_DIRTY=true
+DISABLE_UPDATE_PROMPT=true
+GLOBALIAS_FILTER_VALUES=(cfg diff egrep fa fgrep grep kca l la ll lla ls lsa)
+HIST_STAMPS="yyyy-mm-dd"
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main)
+plugins=(
+    colored-man-pages
+    sudo
+    vscode
+    vi-mode
+)
+(($+commands[asdf])) && plugins+=(asdf)
+(($+commands[fzf])) && plugins+=(fzf)
+(($+commands[git])) && plugins+=(git)
+(($+commands[kubectl])) && plugins+=(kubectl)
+(($+commands[direnv])) && plugins+=(direnv)
+# Only load these plugins outside VS code, as they mess up its terminal
+# if [[ -z "$VSCODE_IPC_HOOK_CLI" ]]; then
+  plugins+=(
+    zsh-syntax-highlighting
+    zsh-autosuggestions
+  ) 
+# else
+   export ZSH_HIGHLIGHT_MAXLENGTH=0
+# fi
+source $ZSH/oh-my-zsh.sh
+# }}}
+# oh-my-zsh aliases {{{
+alias sz='exec zsh'
+alias -g nks="-n kube-system"
+alias -g ndf="-n default"
+alias -g ncs="-n calico-system"
+# }}}
+# Restore original path {{{
+if [[ ! -z "${WSL_INTEROP}" ]]; then
+  PATH="$FULLPATH"
+fi
+# }}}
+# Source common aliases and such {{{
+source $HOME/.commonrc
+# }}}
+# Set ASDF settings {{{
+. ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+# }}}
+# cfg alias completion {{{
+unalias cfg
+cfg() {
+    GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME command git "$@"
+}
+_cfg() {
+    # Use _files for 'cfg add' since showUntrackedFiles is off in .cfg
+    if [[ ${words[2]} == "add" ]]; then
+        shift words
+        (( CURRENT-- ))
+        _files
+    else
+        local service=git
+        words[1]=git
+        GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME _git
+    fi
+}
+compdef _cfg cfg
+# }}}
+# zsh-autoenv {{{
+export AUTOENV_FILE_ENTER=.autoenv.zsh AUTOENV_FILE_LEAVE=.autoenv.zsh AUTOENV_HANDLE_LEAVE=1
+source $HOME/.local/lib/zsh-autoenv/autoenv.zsh
+# }}}
+# oh-my-posh {{{
+[[ -z "$DISABLE_OMP" ]] && (($+commands[oh-my-posh])) && eval $(oh-my-posh init zsh --config=$HOME/.omp.yaml) || {
+  printf "oh-my-posh not found.\n" >&2
+}
+# }}}
+
+# vim:foldmethod=marker:foldlevel=0:syntax=zsh filetype=zsh

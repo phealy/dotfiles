@@ -1,0 +1,242 @@
+# path function {{{
+function _path_prepend {
+    if [ -d "$1" ]; then
+        PATH=${PATH//":$1:"/:} #delete all instances in the middle
+        PATH=${PATH/%":$1"/} #delete any instance at the end
+        PATH=${PATH/#"$1:"/} #delete any instance at the beginning
+        PATH="$1${PATH:+":$PATH"}" #prepend $1 or if $PATH is empty set to $1
+    fi
+}
+# }}}
+# cmd function {{{
+command -v wslpath &>/dev/null && {
+  cmd() {
+    CMD=$1
+    shift;
+    ARGS=$@
+    WIN_PWD=`wslpath -w "$(pwd)"`
+    $(wslpath -u 'C:\Windows\System32\cmd.exe') /c "pushd ${WIN_PWD} && ${CMD} ${ARGS}"
+  }
+}
+# }}}
+# ssh-agent {{{
+if [[ ! -z "${WSL_INTEROP}" ]]; then
+  uname -r | grep -q microsoft-standard-WSL2 && $HOME/.local/bin/wsl-ssh-agent-relay start
+fi
+if [[ ! -z "${WSL_INTEROP}" && -S ${HOME}/.ssh/wsl-ssh-agent.sock ]]; then
+  export SSH_AUTH_SOCK=${HOME}/.ssh/wsl-ssh-agent.sock
+elif [[ -S $HOME/.ssh/ssh_auth_sock ]]; then
+  export SSH_AUTH_SOCK=$HOME/.ssh/ssh_auth_sock
+elif [[ -S $XDG_RUNTIME_DIR/ssh-agent.socket ]]; then
+  export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+fi
+# }}}
+# start x server if running on vty1 {{{
+if [[ "$HOSTNAME" -eq "duo" ]]; then
+  if [[ "$(systemctl is-active graphical.target 2>/dev/null)" == "active" && ! $DISPLAY && $XDG_VTNR -eq 1 && -x "$(command -v sway)" ]]; then
+    export QT_QPA_PLATFORM="wayland;xcb"
+    export QT_QPA_PLATFORMTHEME=qt5ct
+    export CLUTTER_BACKEND=wayland
+    export SDL_VIDEODRIVER=wayland
+    export MOZ_ENABLE_WAYLAND=1
+    lsmod | grep -q nvidia && {
+      exec sway-nvidia &> /dev/null
+    } || {
+      exec sway &> /dev/null
+    }
+    export SWAYSOCK="$(sway --get-socketpath 2>/dev/null)"
+  fi
+fi
+# }}}
+# path {{{
+_path_prepend $HOME/.local/bin
+_path_prepend $HOME/.krew/bin
+_path_prepend $HOME/.opencode/bin
+_path_prepend $HOME/.cdp/cdecli
+_path_prepend "${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
+command -v wslpath &>/dev/null && {
+    ln -sf "$(wslpath -u 'C:\Windows\System32\clip.exe')" $HOME/.local/bin/clip
+    ln -sf "$(wslpath -u 'C:\Windows\System32\clip.exe')" $HOME/.local/bin/clip.exe
+    ln -sf "$(wslpath -u 'C:\Windows\explorer.exe')" $HOME/.local/bin/explorer
+    ln -sf "$(wslpath -u 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe')" $HOME/.local/bin/powershell
+    ln -sf "$(wslpath -u 'C:\Program Files\PowerShell\7\pwsh.exe')" $HOME/.local/bin/pwsh
+    ln -sf "$(wslpath -u 'C:\Windows\system32\cmd.exe')" $HOME/.local/bin/cmd
+    ln -sf "$(wslpath -u 'C:\Windows\system32\cmd.exe')" $HOME/.local/bin/cmd.exe
+    ln -sf "$(wslpath -u 'C:\Users\pahealy\AppData\Local\Programs\Microsoft VS Code\bin\code')" $HOME/.local/bin/code
+    ln -sf "$(wslpath -u 'C:\Users\pahealy\AppData\Local\Programs\Microsoft VS Code Insiders\bin\code-insiders')" $HOME/.local/bin/code-insiders
+}
+set +x
+# }}}
+# set powerline path {{{
+command -v powerline-daemon &>/dev/null && {
+  export POWERLINE_PATH="$(python3 -c 'import inspect,os,powerline;print(os.path.dirname(inspect.getfile(powerline)))')"
+}
+# }}}
+# start tmux {{{
+case $- in
+    *i*) 
+         [[ -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && {
+             exec $HOME/.local/bin/tmx
+         }
+         ;;
+esac
+# }}}
+# make less more friendly for non-text input files, see lesspipe(1) {{{
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# }}}
+# ls color support and aliases {{{
+export LSCOLORS="Exgxcxdxbxegedabagfxfx"
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto -h'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+fi
+# }}}
+# program settings {{{
+export CDPATH=~
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export GPG_TTY=${TTY}
+export LC_COLLATE=C # Case sensitive sort
+[[ -z "$VSCODE_IPC_HOOK_CLI" ]] && { export EDITOR="vim"; } || { export EDITOR="code-wait"; }
+export KUBECTL_NODE_SHELL_IMAGE=mcr.microsoft.com/cbl-mariner/base/core:1.0
+export KUBECTL_NODE_SHELL_POD_MEMORY=512m
+export NMON=cmdtn
+[[ -S "/run/user/$(id -u)/docker.sock" ]] && export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock
+# }}}
+# update-kubeconfig {{{
+function update-kubeconfig {
+  CURRENT_SHELL=$(awk '/PPid/ { cmd="readlink /proc/"$2"/exe"; cmd | getline path; print path }' /proc/thread-self/status)
+  if [ "${CURRENT_SHELL#*zsh}" != "$CURRENT_SHELL" ]; then
+    export KUBECONFIG=$((grep -Els '^kind: Config$' ~/.kube/* ~/.kube/config.d/**/*(N)) 2>/dev/null | paste -sd':')
+  elif [ "${CURRENT_SHELL#*bash}" != "$CURRENT_SHELL" ]; then
+    export KUBECONFIG=$((grep -Els '^kind: Config$' ~/.kube/* ~/.kube/config.d/**/*) 2>/dev/null | paste -sd':')
+  fi
+}
+update-kubeconfig
+# }}}
+# aliases {{{
+alias auu="sudo apt update && sudo apt upgrade"
+alias azaksgc="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1})+abort' --header-lines=2); kubectl ctx \$CONTEXT"
+alias azaksgca="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials -a --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1}-admin)+abort' --header-lines=2); kubectl ctx \$CONTEXT"
+alias azacrlogin="az acr login --subscription c1089427-83d3-4286-9f35-5af546a6eb67 -g pahealy-devbox -n pahealyaks"
+alias azfg="az fzf group"
+alias azfl="az fzf location"
+alias azfs="az fzf subscription"
+alias azs="az fzf subscription && az fzf group"
+alias aztoken="az account get-access-token --query accessToken -o tsv"
+alias cfg='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias cm='chezmoi'
+alias cma='chezmoi add'
+alias cmap='chezmoi apply'
+alias cmapr='chezmoi apply -R'
+alias cmd='chezmoi diff'
+alias cme='chezmoi edit'
+alias cmg='chezmoi git --'
+alias cmra='chezmoi re-add'
+alias cmu='chezmoi update'
+which docker >/dev/null || { which nerdctl >/dev/null && alias docker=nerdctl; }
+command -v wslpath &>/dev/null && {
+    alias clip="$(wslpath -u 'C:\Windows\System32\clip.exe')"
+    alias teeclip="tee >($(wslpath -u 'C:\Windows\System32\clip.exe'))"
+}
+#alias code="/c/Users/$USERNAME/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe"
+command -v code-insiders >/dev/null 2>&1 && { alias code=code-insiders; }
+alias c='code'
+alias cr='code -r'
+alias cw='code -w'
+alias crw='code -rw'
+alias d='docker'
+alias dc='docker-compose'
+alias dr='direnv reload'
+alias exp='/mnt/c/Windows/explorer.exe'
+alias explorer='/mnt/c/Windows/explorer.exe'
+alias ez='exec zsh'
+alias fa='[[ -z "$POWERLINE_CONFIG_OVERRIDES" ]] && export POWERLINE_CONFIG_OVERRIDES="common.default_top_theme=ascii" || unset POWERLINE_CONFIG_OVERRIDES'
+alias fixpaste="bash -c \"printf '\e[?2004l'\""
+alias kak='kubectl apply -k'
+alias kctx='kubectl ctx'
+alias ${ZSH_VERSION:+-g} kfqdn="kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.server}' | sed -e 's!https\?://\(.*\):[0-9]\+/\?!\1!g'"
+alias ${ZSH_VERSION:+-g} kga='kubectl get --show-kind $(kubectl api-resources --verbs=list --namespaced -o name | grep -v -e events | paste -d, -s)'
+alias ${ZSH_VERSION:+-g} kgA='kubectl get --show-kind -A $(cat <(kubectl api-resources --verbs=list --namespaced=true -o name) <(kubectl api-resources --verbs=list --namespaced=false -o name) | grep -v -e events | paste -d, -s)'
+alias ${ZSH_VERSION:+-g} kgno='kubectl get nodes -o wide -L kubernetes.io/arch -L node.kubernetes.io/instance-type -L kubernetes.azure.com/mode -L topology.kubernetes.io/zone'
+alias ${ZSH_VERSION:+-g} kgp='kubectl get pods -o wide'
+alias ${ZSH_VERSION:+-g} kgpa='kubectl get pods -A -o wide'
+alias kafr='kubectl apply -R -f'
+alias kdel='kubectl delete'
+alias ke='kubectl edit'
+alias kk='kubectl kustomize'
+alias ksk="cd ~/dev/github.com/kubernetes/kubernetes"
+alias klck='kubelogin convert-kubeconfig -l azurecli'
+alias knosh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-shell -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias knossh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-ssh -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias knoser="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-serial -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias kns='kubectl ns'
+alias kr='kubectl retina'
+alias krc='kubectl retina capture'
+alias ks='kustomize'
+alias kun='kubectl unbounded net'
+alias kund='kubectl unbounded net dashboard'
+alias kunn='kubectl unbounded net node'
+alias kunnl='kubectl unbounded net node list'
+alias kunnlw='kubectl unbounded net node list -o wide'
+alias kunnlo='kubectl unbounded net node logs'
+alias kunns='kubectl unbounded net node show'
+alias kunc='kubectl unbounded net controller'
+alias kuncl='kubectl unbounded net controller logs'
+alias kuncpf='kubectl unbounded net port-forward'
+alias l='ls -CFh --color --group-directories-first'
+alias la='ls -Ah --color --group-directories-first'
+alias ll='ls -lFh --color --group-directories-first'
+alias ls='ls -CFh --color --group-directories-first'
+alias lla='ls -alFh --group-directories-first'
+alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'
+alias sshi='ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
+alias winclip='powershell.exe -c '\''$stdin = @($input); if ($stdin) { Set-Clipboard $stdin } else { Get-Clipboard }'\'
+function mkcd { mkdir -p $1 && cd $1; }
+function tmpsh {
+    DIRECTORY="$(mktemp -p "$(pwd)" -d)" && { 
+        trap 'rm -vrf "${DIRECTORY}"' EXIT
+        printf 'Entering temporary directory; ctrl-d to exit shell and clean up.\n'
+        if [[ ! -z "$*" ]]; then
+            cp -v "$*" "$DIRECTORY"
+        fi
+        pushd "$DIRECTORY" >/dev/null
+        $SHELL
+        popd >/dev/null
+    }
+}
+# }}}
+# git user and email {{{
+command -v git &>/dev/null && {
+  if [[ "$USER" == "phealy" ]]; then
+    git config --global user.email "phealy@phealy.com"
+    git config --global user.name "Patrick W. Healy"
+  elif [[ "$USER" == "pahealy" || "$USER" == "patrick" ]]; then
+    git config --global user.email "patrick.healy@microsoft.com"
+    git config --global user.name "Patrick W. Healy"
+  fi
+  git config --global push.default simple
+  git config --global submodule.recurse true
+  git config --global init.defaultBranch main
+}
+# }}}
+# Azure cloud shell {{{
+[[ ! -z "$AZURE_HTTP_USER_AGENT" ]] && {
+    source /usr/bin/cloudshellhelp
+}
+# }}}
+# WSL: use host browser {{{
+if [[ ! -z "${WSL_INTEROP}" ]]; then
+  if command -v wslview &>/dev/null; then
+    export BROWSER="$(which wslview)"
+  fi
+fi
+# }}}
+# Local overrides {{{
+[[ -f $HOME/.commonrc_local ]] && . $HOME/.commonrc_local
+# }}}
+
+# vim:foldmethod=marker:foldlevel=0:syntax=sh filetype=sh
