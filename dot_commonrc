@@ -117,37 +117,42 @@ function update-kubeconfig {
 }
 update-kubeconfig
 # }}}
+# Azure CLI aliases {{{
+command -v az &>/dev/null && {
+    alias azaksgc="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1})+abort' --header-lines=2); kubectl ctx \$CONTEXT"
+    alias azaksgca="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials -a --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1}-admin)+abort' --header-lines=2); kubectl ctx \$CONTEXT"
+    alias azacrlogin="az acr login --subscription c1089427-83d3-4286-9f35-5af546a6eb67 -g pahealy-devbox -n pahealyaks"
+    alias azfg="az fzf group"
+    alias azfl="az fzf location"
+    alias azfs="az fzf subscription"
+    alias azs="az fzf subscription && az fzf group"
+    alias aztoken="az account get-access-token --query accessToken -o tsv"
+}
+# }}}
+# Chezmoi aliases {{{
+command -v chezmoi &>/dev/null && {
+    alias cm='chezmoi'
+    alias cma='chezmoi add'
+    alias cmap='chezmoi apply'
+    alias cmapr='chezmoi apply -R'
+    alias cmat='chezmoi add -T'
+    alias cmcd='chezmoi cd'
+    alias cmd='chezmoi diff'
+    alias cme='chezmoi edit --init --watch'
+    alias cmet='chezmoi execute-template "$@"'
+    alias cmg='chezmoi git --'
+    alias cmga='chezmoi git -- add'
+    alias cmgaa='chezmoi git -- add ~/.local/share/chezmoi'
+    alias cmgacp='chezmoi git -- add ~/.local/share/chezmoi && chezmoi git -- commit && chezmoi git -- push'
+    alias cmgc='chezmoi git -- commit'
+    alias cmgp='chezmoi git -- push'
+    alias cmgs='chezmoi git -- status'
+    alias cmra='chezmoi re-add'
+    alias cmu='chezmoi update --init'
+    alias cmur='chezmoi update -R --init'
+# }}}
 # aliases {{{
 alias auu="sudo apt update && sudo apt upgrade"
-alias azaksgc="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1})+abort' --header-lines=2); kubectl ctx \$CONTEXT"
-alias azaksgca="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials -a --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1}-admin)+abort' --header-lines=2); kubectl ctx \$CONTEXT"
-alias azacrlogin="az acr login --subscription c1089427-83d3-4286-9f35-5af546a6eb67 -g pahealy-devbox -n pahealyaks"
-alias azfg="az fzf group"
-alias azfl="az fzf location"
-alias azfs="az fzf subscription"
-alias azs="az fzf subscription && az fzf group"
-alias aztoken="az account get-access-token --query accessToken -o tsv"
-alias cfg='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias cm='chezmoi'
-alias cma='chezmoi add'
-alias cmap='chezmoi apply'
-alias cmapr='chezmoi apply -R'
-alias cmat='chezmoi add -T'
-alias cmcd='chezmoi cd'
-alias cmd='chezmoi diff'
-alias cme='chezmoi edit --init --watch'
-alias cmet='chezmoi execute-template "$@"'
-alias cmg='chezmoi git --'
-alias cmga='chezmoi git -- add'
-alias cmgaa='chezmoi git -- add ~/.local/share/chezmoi'
-alias cmgacp='chezmoi git -- add ~/.local/share/chezmoi && chezmoi git -- commit && chezmoi git -- push'
-alias cmgc='chezmoi git -- commit'
-alias cmgp='chezmoi git -- push'
-alias cmgs='chezmoi git -- status'
-alias cmra='chezmoi re-add'
-alias cmu='chezmoi update --init'
-alias cmur='chezmoi update -R --init'
-which docker >/dev/null || { which nerdctl >/dev/null && alias docker=nerdctl; }
 command -v wslpath &>/dev/null && {
     alias clip="$(wslpath -u 'C:\Windows\System32\clip.exe')"
     alias teeclip="tee >($(wslpath -u 'C:\Windows\System32\clip.exe'))"
@@ -187,21 +192,11 @@ alias kns='kubectl ns'
 alias kr='kubectl retina'
 alias krc='kubectl retina capture'
 alias ks='kustomize'
-alias kun='kubectl unbounded net'
-alias kund='kubectl unbounded net dashboard'
-alias kunn='kubectl unbounded net node'
-alias kunnl='kubectl unbounded net node list'
-alias kunnlw='kubectl unbounded net node list -o wide'
-alias kunnlo='kubectl unbounded net node logs'
-alias kunns='kubectl unbounded net node show'
-alias kunc='kubectl unbounded net controller'
-alias kuncl='kubectl unbounded net controller logs'
-alias kuncpf='kubectl unbounded net port-forward'
-alias l='ls -CFh --color --group-directories-first'
-alias la='ls -Ah --color --group-directories-first'
-alias ll='ls -lFh --color --group-directories-first'
-alias ls='ls -CFh --color --group-directories-first'
-alias lla='ls -alFh --group-directories-first'
+alias l='ls -CFh --color'
+alias la='ls -Ah --color'
+alias ll='ls -lFh --color'
+alias ls='ls -CFh --color'
+alias lla='ls -alFh'
 alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'
 alias sshi='ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
 alias winclip='powershell.exe -c '\''$stdin = @($input); if ($stdin) { Set-Clipboard $stdin } else { Get-Clipboard }'\'
@@ -217,20 +212,6 @@ function tmpsh {
         $SHELL
         popd >/dev/null
     }
-}
-# }}}
-# git user and email {{{
-command -v git &>/dev/null && {
-  if [[ "$USER" == "phealy" ]]; then
-    git config --global user.email "phealy@phealy.com"
-    git config --global user.name "Patrick W. Healy"
-  elif [[ "$USER" == "pahealy" || "$USER" == "patrick" ]]; then
-    git config --global user.email "patrick.healy@microsoft.com"
-    git config --global user.name "Patrick W. Healy"
-  fi
-  git config --global push.default simple
-  git config --global submodule.recurse true
-  git config --global init.defaultBranch main
 }
 # }}}
 # Azure cloud shell {{{

@@ -142,7 +142,7 @@ plugins=(
     zsh-autosuggestions
   ) 
 # else
-   export ZSH_HIGHLIGHT_MAXLENGTH=0
+#   export ZSH_HIGHLIGHT_MAXLENGTH=0
 # fi
 source $ZSH/oh-my-zsh.sh
 # }}}
@@ -162,29 +162,6 @@ source $HOME/.commonrc
 # }}}
 # Set ASDF settings {{{
 . ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
-# }}}
-# cfg alias completion {{{
-unalias cfg
-cfg() {
-    GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME command git "$@"
-}
-_cfg() {
-    # Use _files for 'cfg add' since showUntrackedFiles is off in .cfg
-    if [[ ${words[2]} == "add" ]]; then
-        shift words
-        (( CURRENT-- ))
-        _files
-    else
-        local service=git
-        words[1]=git
-        GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME _git
-    fi
-}
-compdef _cfg cfg
-# }}}
-# zsh-autoenv {{{
-export AUTOENV_FILE_ENTER=.autoenv.zsh AUTOENV_FILE_LEAVE=.autoenv.zsh AUTOENV_HANDLE_LEAVE=1
-source $HOME/.local/lib/zsh-autoenv/autoenv.zsh
 # }}}
 # oh-my-posh {{{
 [[ -z "$DISABLE_OMP" ]] && (($+commands[oh-my-posh])) && eval $(oh-my-posh init zsh --config=$HOME/.omp.yaml) || {
