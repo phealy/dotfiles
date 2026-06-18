@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Modified TMUX start script from:
+#     http://forums.gentoo.org/viewtopic-t-836006-start-0.html
+#
+# Store it to `~/.local/bin/tmx` and issue `chmod +x`.
+#
+# Works because bash automatically trims by assigning to variables and by passing arguments
+
+# Debugging
+# exec >$HOME/.tmx.log 2>&1; set -x
+
+trim() { echo $1; }
+
+export TERM=tmux-256color
+export LANG=en_US.UTF-8
+
+# Set terminal size
+#command -v python3 >/dev/null 2>&1 && python3 $HOME/.local/bin/termsize.py >/dev/null
+
+# Start a keyctl session, if keyctl is installed and there's a user session going.
+[[ -x "$(command -v keyctl)" ]] && { keyctl show -3 2>&1 | grep -q "_uid" && keyctl new_session >/dev/null; }
+
+# Load environment variables
+. <(bash --noprofile --norc -t -c '. ~/.commonrc; export -p')
+
+base_session="${HOSTNAME//\./-}_${USER}"
+# This actually works without the trim() on all systems except OSX
+tmux_nb=$(trim $(tmux ls | grep "^$base_session" | wc -l))
+if [[ "$tmux_nb" == "0" ]]; then
+  if [[ "${HOSTNAME}" == "home" ]]; then
+    tmux new-session -s $base_session -d $HOME/.local/bin/tf \; new-window weechat
+  else
+    tmux new-session -s $base_session -d \;
+  fi
+fi
+
+# Don't start the session if we're running from cron
+if [[ -z ${CRONTAB+x} ]]; then
+  # Make sure we are not already in a tmux session
+  if [[ -z ${TMUX+x} ]]; then
+    # Kill defunct sessions first
+    old_sessions=$(tmux ls 2>/dev/null | grep -E "^[0-9]{14}.*[0-9]+\)$" | cut -f 1 -d:)
+    for old_session_id in $old_sessions; do
+      tmux kill-session -t $old_session_id
+    done
+
+    # Session is is date and time to prevent conflict
+    date_string=$(date +%Y%m%d%H%M%S)
+    echo "Launching copy of base session $base_session ..."
+
+    if [[ -z ${SSH_CLIENT+x} ]]; then
+      hostname_string="$(sed -e "s/\.$//;s/\./-/g" /proc/sys/kernel/hostname)"
+    else
+      hostname_string="$((dig +short +timeout=1 +tries=1 +nocomment -x "${SSH_CLIENT// */}" | grep -vEe "^;;" -e "^$" || echo "${SSH_CLIENT// */}") | sed -e "s/\.$//;s/\./-/g")"
+    fi
+    session_id="${date_string}_${hostname_string}"
+    # Create a new session (without attaching it) and link to base session to share windows
+    tmux -u new-session -d -t $base_session -s $session_id
+    # Set the default window to tf
+    tmux select-window -t $session_id:1
+    # Attach to the new session
+    tmux -u -2 attach-session -t $session_id
+    # When we detach from it, kill the session
+    lsof /tmp/tmux-$(id -u)/default >/dev/null 2>&1 && tmux kill-session -t $session_id || exit 0
+  else
+    echo "Already in tmux, exiting..."
+  fi
+fi

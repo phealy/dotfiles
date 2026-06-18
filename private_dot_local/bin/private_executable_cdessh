@@ -1,0 +1,39 @@
+#! /bin/bash
+
+set -euo pipefail
+
+if [ ! -f $HOME/.local/share/microsoft/cdp/MyCDEDetails_*.json ]; then
+    printf "No CDE configuration files found. Run 'cde ssh -c <session>' at least once to set up the config files and keys.\n"
+    exit 1
+fi
+
+SESSION="$(\
+    jq -rs '([["ID","Name","Distribution"]]+map([.id, .recipeConfiguration.name, .recipeConfiguration.recipeParameters.distribution]))[] | @tsv' \
+       $HOME/.local/share/microsoft/cdp/MyCDEDetails_*.json \
+    | column -t \
+    | fzf --header-lines 1 --with-nth=2,3 --accept-nth=1 --height=~20% -1 ${*:+-q}${*}\
+)"
+
+if [ -z "$SESSION" ]; then
+    printf "No session selected, exiting.\n"
+    exit 1
+fi
+
+source <(jq -r '
+    .connection.sshConnection as $s | $s.bastionResource as $b | $s.virtualMachineResource as $v
+    | "CDE_BS=\"" + $b.subscriptionId + "\"\n"
+    + "CDE_BRG=\"" + $b.resourceGroupName + "\"\n"
+    + "CDE_BN=\"" + $b.name + "\"\n"
+    + "CDE_TRI=\"/subscriptions/" + $v.subscriptionId + "/resourceGroups/" + $v.resourceGroupName + "/providers/Micrsoft.Compute/virtualMachines/" + $v.name  + "\"\n"
+    + "CDE_USER=\"" + $s.user + "\"\n"
+    + "CDE_KEY=\"" + .id + "\"\n"
+    ' <$HOME/.local/share/microsoft/cdp/MyCDEDetails_${SESSION}.json)
+
+(set -x; az network bastion ssh \
+   --subscription $CDE_BS \
+   --resource-group $CDE_BRG \
+   --name $CDE_BN \
+   --target-resource-id $CDE_TRI \
+   --auth-type ssh-key \
+   --username $CDE_USER \
+   --ssh-key $HOME/.ssh/wave/${CDE_KEY})

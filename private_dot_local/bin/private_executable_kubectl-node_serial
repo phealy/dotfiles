@@ -1,0 +1,104 @@
+#! /bin/bash
+
+shopt -s extglob
+set -eo pipefail
+
+[[ "$DEBUG" == "true" ]] && set -x
+
+if [[ "$1" == "" && -x "$(which fzf)" ]]; then
+  NODE_NAME=$(FZF_DEFAULT_COMMAND='kubectl get nodes' fzf -1 --header-lines=1 --height=25% | awk '{print $1}')
+elif [[ "$1" == "" ]]; then
+  echo "Please specify a node name on the command line or install fzf to select dynamically."
+  exit 255
+else
+  NODE_NAME="$1"
+fi
+
+# Clear bracketed paste mode
+printf '\e[?2004l'
+
+PROVIDER_ID=$(kubectl get node $NODE_NAME -o jsonpath="{.spec.providerID}")
+NODE_ID="${PROVIDER_ID#azure://}"
+VMSS_ID="${NODE_ID%/virtualMachines/+([[:digit:]])}"
+INSTANCE_ID="${NODE_ID#${VMSS_ID}/virtualMachines/}"
+SUBSCRIPTION_ID="${PROVIDER_ID#*subscriptions/}"
+SUBSCRIPTION_ID="${SUBSCRIPTION_ID%/resourceGroups/*}"
+RESOURCE_GROUP="${PROVIDER_ID#*resourceGroups/}"
+RESOURCE_GROUP="${RESOURCE_GROUP%/providers*}"
+VMSS_NAME="${PROVIDER_ID#*virtualMachineScaleSets/}"
+VMSS_NAME="${VMSS_NAME%/virtualMachines*}"
+
+echo    "Subscription ID:                  $SUBSCRIPTION_ID"
+echo    "Resource group:                   $RESOURCE_GROUP"
+echo    "VMSS name:                        $VMSS_NAME"
+echo    "Node name:                        $NODE_NAME"
+
+RESET_PW=""
+until [[ "$RESET_PW" =~ [yYnN] ]]; do
+  read -n 1 -p "Reset azureuser password (y/n)?   " RESET_PW
+  echo ""
+done
+
+if [[ "$RESET_PW" =~ [yY] ]]; then 
+  read -e -i "$(uuidgen)" -p "Enter password (blank for UUID):  " PASSWORD
+  echo -n "Setting VMSS extension:           "
+  VMSS_EXTENSION_STATE=$(az vmss extension set \
+    --subscription "$SUBSCRIPTION_ID" \
+    --resource-group "$RESOURCE_GROUP" \
+    --vmss-name "$VMSS_NAME" \
+    --name "VMAccessForLinux" \
+    --publisher "Microsoft.OSTCExtensions" \
+    --version 1.4 \
+    --protected-settings <(echo -e "{\"username\":\"azureuser\",\"password\":\"$PASSWORD\"}") \
+    --only-show-errors \
+    </dev/null) || { echo "Failed to set VMSS password: ${VMSS_EXTENSION_STATE}."; exit 255; }
+  echo "done."
+fi
+
+echo -n "VMSS Boot diagnostics enabled:    "
+VMSS_BOOT_DIAGNOSTICS_STATE=$(az resource show --id $VMSS_ID --query 'properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.enabled')
+echo ${VMSS_BOOT_DIAGNOSTICS_STATE:=false}
+if [[ "$VMSS_BOOT_DIAGNOSTICS_STATE" == "false" ]]; then
+  echo -n "Enabling boot diagnostics:        "
+  VMSS_BOOT_DIAGNOSTICS_STATE=$(az resource update --ids $VMSS_ID \
+    --remove 'properties.virtualMachineProfile.storageProfile' \
+    --set 'properties.virtualMachineProfile.diagnosticsProfile'='{"bootDiagnostics": {"enabled": "true"}}' \
+    --query 'properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.enabled' \
+    || { echo "failed to update VMSS boot diagnostics."; exit 255; })
+  echo "done."
+fi
+if [[ "$VMSS_BOOT_DIAGNOSTICS_STATE" == "false" ]]; then
+  echo "VMSS boot diagnostics should be enabled but isn't."
+  exit 255
+fi
+
+echo -n "VMSS instance is on latest model: "
+VM_INSTANCE_LATEST_MODEL=$(az resource show --id $NODE_ID --query 'properties.latestModelApplied')
+echo ${VM_INSTANCE_LATEST_MODEL:=false}
+if [[ "$VM_INSTANCE_LATEST_MODEL" == "false" ]]; then
+  echo -n "Updating instance:               "
+  az vmss update-instances \
+    --subscription "$SUBSCRIPTION_ID" \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$VMSS_NAME" \
+    --instance-ids "$INSTANCE_ID" \
+    || {
+      echo "Failed to update VMSS instance to latest model."
+      exit 255
+    }
+  echo "Updating instance:                done."
+fi
+
+cat <<"EOF"
+Run this command to set the terminal size correctly:
+  printf "\033[18t";IFS=";" read -dt -as;stty rows ${s[2]} cols ${s[1]};printf "\r"
+
+Press Ctrl-] to get the serial console menu
+Press any key to start the serial console session via Azure CLI...
+EOF
+read -n 1 CONFIRM
+az serial-console connect \
+    --subscription "$SUBSCRIPTION_ID" \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$VMSS_NAME" \
+    --instance-id "$INSTANCE_ID"

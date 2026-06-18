@@ -1,0 +1,3 @@
+#! /bin/bash
+
+kubectl get --show-kind $(kubectl api-resources --verbs=list --namespaced -o name | grep -v -e events | paste -d, -s) "$@"

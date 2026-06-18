@@ -1,0 +1,88 @@
+#! /bin/bash
+
+set -eo pipefail
+
+if [[ "$1" == "" && -x "$(which fzf)" ]]; then
+  NODE_NAME=$(FZF_DEFAULT_COMMAND='kubectl get nodes' fzf -1 --header-lines=1 --height=25% | awk '{print $1}')
+elif [[ "$1" == "" ]]; then
+  echo "Please specify a node name on the command line or install fzf to select dynamically."
+  exit 255
+fi
+
+CONTEXT=$(kubectl config current-context)
+NAMESPACE=$(kubectl config view --minify --output jsonpath="{.contexts[0].context.namespace}")
+NAMESPACE=${NAMESPACE:-kube-system}
+SVC_NAME="ssh-${NODE_NAME:=$1}-${RANDOM}"
+NODE_IP=$(kubectl --context=$CONTEXT get node $NODE_NAME -o json | jq -r '.status.addresses[] | select(.type == "InternalIP") | select(.address | contains(".")).address' || exit 255)
+MY_IP=$(curl -s ifconfig.me) # Fetch my IP for the allow rule
+
+#echo "Attempting a direct SSH connection..."
+#ssh -o ConnectTimeout=3 azureuser@$NODE_IP
+#
+#if [ $? -ne 255 ]; then
+#  exit $?
+#fi 
+
+echo -e "Setting up K8s node SSH for ${NODE_NAME}/${NODE_IP}:\n"
+
+delete_service () { # Set a hook to clean up the service when we're done
+    ARG=$?
+    echo ""
+    kubectl --context=$CONTEXT --namespace=$NAMESPACE delete service/$SVC_NAME --wait=false
+    exit $ARG
+} 
+trap delete_service EXIT
+
+echo -n "Creating endpoint object...      "
+kubectl --context=$CONTEXT apply -f - <<EOF
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: $SVC_NAME
+  namespace: $NAMESPACE
+  labels:
+    node: $NODE_NAME
+subsets:
+  - addresses:
+      - ip: $NODE_IP
+    ports:
+      - port: 22
+EOF
+
+echo -n "Creating service object...       "
+kubectl --context=$CONTEXT apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: $SVC_NAME
+  namespace: $NAMESPACE
+  labels:
+    node: $NODE_NAME
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 22
+    targetPort: 22
+EOF
+#  loadBalancerSourceRanges:
+#  - ${MY_IP}/32
+
+# Now that the service is created, wait for it to have its IP assigned
+echo -n "Awaiting public IP assignment... "
+timeout --foreground 300 bash -c "until [[ \"\$(kubectl --context=$CONTEXT --namespace=$NAMESPACE get service/${SVC_NAME} --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')\" != \"\" ]]; do sleep 5; done"
+SVC_IP=$(kubectl --context=$CONTEXT --namespace=$NAMESPACE get service $SVC_NAME -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo -e "${SVC_IP}\n"
+
+# SSH won't succeed immediately as NSG and LB changes take a little bit to propagate
+# This will try 30 times and wait 10s per attempt, so a 5 minute timeout
+echo "NOTE: LB and NSG replication can take up to 2-3 minutes and must complete before the connection will succeed."
+echo "Connecting to $SVC_IP (this may take a while)..."
+while (true); do 
+  ${SSH_COMMAND:-ssh} -A -o ConnectTimeout=10 -o ConnectionAttempts=300 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no azureuser@$SVC_IP
+  echo "Connection terminated."
+  echo "Reconnecting in 10 seconds - press ctrl-c to stop trying to reconnect."
+  sleep 10
+done
+
+read -p "Press enter to clean up the service..." WAIT

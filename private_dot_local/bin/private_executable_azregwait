@@ -1,0 +1,27 @@
+#! /bin/zsh
+
+CLOCK_STR=("🕐" "🕑" "🕒" "🕓" "🕔" "🕕" "🕖" "🕗" "🕘" "🕙" "🕚" "🕛")
+INDEX=0
+REGISTER_PROVIDERS=()
+typeset -U REGISTER_PROVIDERS
+
+while : ; do
+    FEATURES=$(az feature list -o table --query "[?(!contains(properties.state, 'Registered') && !contains(properties.state, 'NotRegistered') && !contains(properties.state, 'Unregistered'))].[name, properties.state]" -o tsv | perl -0777 -pe "s/[ \t]+/: /g; s/\n$//; s/\n/, /g" 2>/dev/null)
+    #PROVIDERS=$(az provider list -o table --query "[?contains(properties.registrationState, 'Registering')].name | join (', ',@)" -o tsv 2>/dev/null)
+    REGISTER_PROVIDERS+=$(<<<"$FEATURES" cut -d/ -f1)
+    #REGISTER_PROVIDERS+=$(<<<"$PROVIDERS" cut -d/ -f1)
+    [[ -z "$FEATURES" && -z "$PROVIDERS" ]] && break
+    INDEX=$(( INDEX == 11 ? 0 : INDEX + 1 ))
+    SPIN="${CLOCK_STR[$INDEX]}"
+    REGISTERING=($FEATURES $PROVIDERS)
+    echo -ne "\r$SPIN Features in transitioning states: $REGISTERING "
+    sleep 5
+done
+
+echo "Reregistering providers..."
+for PROVIDER in $REGISTER_PROVIDERS; do
+  echo "Registering $PROVIDER"
+  az provider register -n $PROVIDER
+done
+
+echo -e "\nComplete. Don't forget to register the provider."

@@ -1,0 +1,40 @@
+#! /bin/bash
+
+ENV_FILE=$HOME/.azenv-selected
+
+(
+  declare -a FZF_ENVS
+
+  # Parse the AZURE-environments file
+  while IFS=, read -r NAME DESC AZURE KUBE; do
+    if [[ "${NAME:0:1}" != "#" ]]; then
+            FZF_ENVS+=("$NAME  $DESC")
+            declare -Ag "AZURE_ENV_${NAME}=( [NAME]='$NAME' [DESC]='$DESC' [AZURE]='$AZURE' [KUBE]='$KUBE' )"
+        fi
+  done
+
+  if [[ -z "$1" ]]; then
+      declare -n ENVIRONMENT="AZURE_ENV_$( printf '%s\n' "${FZF_ENVS[@]}" | fzf | cut -d\  -f1)"
+  else
+      declare -n ENVIRONMENT="AZURE_ENV_${1}"
+  fi
+
+  echo "${ENVIRONMENT[DESC]}"
+
+  if [[ "${ENVIRONMENT[NAME]}" == "azcc" ]]; then
+    cat > $ENV_FILE <<-EOF
+			unset AZURE_ENVIRONMENT_NAME
+			unset AZURE_CONFIG_DIR
+			unset KUBECONFIG
+			export KUBECONFIG=$(echo $(ls ~/.kube/config.d/*) | sed 's/ /:/g')
+			EOF
+  else
+    eval mkdir -p ${ENVIRONMENT[KUBE]}.d
+    cat > $ENV_FILE <<-EOF
+			export AZURE_ENVIRONMENT_NAME="${ENVIRONMENT[DESC]}"
+			export AZURE_CONFIG_DIR="${ENVIRONMENT[AZURE]}"
+			export KUBECONFIG=\$(echo ${ENVIRONMENT[KUBE]} \$(expand_path ${ENVIRONMENT[KUBE]}.d)/** | tr " " ":")
+			EOF
+  fi
+
+) <$HOME/.azenv-list
