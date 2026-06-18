@@ -9,4 +9,12 @@
 	defaultBranch = main
 [credential]
 	helper = cache
-{{- if eq .machineType "work" }}{{ "\n\thelper = git-credential-azure-cli" }}{{ end }}
+{{- if eq .machineType "work" }}
+{{- print "\n\thelper = " (joinPath (output "asdf" "where" "golang") "bin" "git-credential-azure-cli") }}
+[azureCliCredentialHelper]
+	allowedDomain = visualstudio.com
+	allowedDomain = dev.azure.com
+	allowedDomain = goproxyprod.goms.io
+[azureCliCredentialHelper "https://goproxyprod.goms.io"]
+	resource = https://microsoft.onmicrosoft.com/AKSGoProxyMSFT
+{{ end }}
