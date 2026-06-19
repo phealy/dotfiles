@@ -1,0 +1,18 @@
+{{- if eq .chezmoi.os "linux" -}}
+{{- $homeDir := .chezmoi.homeDir -}}
+#! /bin/bash
+
+# Install missing go tools into current go version
+asdf reshim
+. {{ joinPath $homeDir ".asdf" "plugins" "golang" "set-env.bash" }}
+{{ range .goTools -}}
+{{ $binaryPath := (joinPath (output (joinPath $homeDir ".local" "bin" "asdf") "where" "golang") "bin" (last (.name | splitList "/"))) }}
+# Looking for {{ $binaryPath }}
+{{ if not (isExecutable $binaryPath) }}
+{{ if not .goauth }}GOAUTH=""; {{ end }}{{ if not .goproxy }}GOPROXY=""; {{ end }}(set -x; {{ output (joinPath $homeDir ".local" "bin" "asdf") "which" "go" | trim | quote }} install {{ .name }}@{{ .version }})
+{{ else -}}
+# Binary already available.
+{{ end -}}
+{{ end -}}
+asdf reshim
+{{ end -}}

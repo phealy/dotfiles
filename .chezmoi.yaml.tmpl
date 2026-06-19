@@ -20,7 +20,7 @@ data:
     machineType: {{ $machineType | quote }}
     name: "Patrick W. Healy"
     email: {{ $email | quote }}
-{{ if eq .machineType "work" }}    goTools:
+{{ if eq $machineType "work" }}    goTools:
         - name: github.com/phealy/git-credential-azure-cli
           version: v0.1.4
           goproxy: false

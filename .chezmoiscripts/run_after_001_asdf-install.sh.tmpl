@@ -20,12 +20,6 @@ asdf list "{{ $name }}" 2>&1 | grep -q "No compatible versions installed" && {
     asdf set -u "{{ $name }}" "${version}"
 }
 {{- end }}
-{{- if or (not (hasKey $value "deleteOldVersions")) (default (get $value "deleteOldVersions") false) }}
-for oldVersion in $(asdf list "{{ $name }}" | grep -v "{{ get $value "version" }}" | sed -e "s/[ \*]//g"); do
-    printf "Removing old tool version {{ $name }} ${oldVersion}...\n"
-    asdf uninstall "{{ $name }}" "$oldVersion" 2>&1 | sed -e "s/^/asdf: uninstall {{ $name }} ${oldVersion}> /g"
-done
-{{ end }}
 {{- end }}
 asdf reshim
 {{ end -}}

@@ -1,35 +1,48 @@
 asdf:
+    python:
+        url: https://github.com/danhper/asdf-python.git
+        version: latest
     azure-cli:
         url: https://github.com/EcoMind/asdf-azure-cli.git
+        version: latest
     chezmoi:
         url: https://github.com/joke/asdf-chezmoi.git
+        version: latest
     direnv:
         url: https://github.com/asdf-community/asdf-direnv.git
+        version: latest
     fzf:
         url: https://github.com/kompiro/asdf-fzf.git
+        version: latest
     github-cli:
         url: https://github.com/bartlomiejdanek/asdf-github-cli.git
+        version: latest
     golang:
         url: https://github.com/asdf-community/asdf-golang.git
-        deleteOldVersions: true
+        version: latest
     helm:
         url: https://github.com/Antiarchitect/asdf-helm.git
+        version: latest
     k9s:
         url: https://github.com/looztra/asdf-k9s.git
+        version: latest
     krew:
         url: https://github.com/bjw-s/asdf-krew.git
+        version: latest
     kubectl:
         url: https://github.com/asdf-community/asdf-kubectl.git
+        version: latest
     kubelogin:
         url: https://github.com/sechmann/asdf-kubelogin.git
+        version: latest
     ohmyposh:
         url: https://github.com/splinter98/asdf-ohmyposh.git
     powershell-core:
         url: https://github.com/daveneeley/asdf-powershell-core.git
-    python:
-        url: https://github.com/danhper/asdf-python.git
-        deleteOldVersions: false
+        version: latest
     stern:
         url: https://github.com/looztra/asdf-stern.git
+        version: latest
     yq:
         url: https://github.com/sudermanjr/asdf-yq.git
+        version: latest

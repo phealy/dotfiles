@@ -9,7 +9,7 @@
 	defaultBranch = main
 [credential]
 	helper = cache
-{{- if eq .machineType "work" }}
+{{- if and (eq .machineType "work") (not (empty (lookPath "asdf"))) (not (empty (lookPath "go"))) }}
 {{- print "\n\thelper = " (joinPath (output "asdf" "where" "golang") "bin" "git-credential-azure-cli") }}
 [azureCliCredentialHelper]
 	allowedDomain = visualstudio.com
