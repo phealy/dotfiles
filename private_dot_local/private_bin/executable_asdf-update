@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+#
+# asdf-update - For every asdf plugin, find the latest available version and
+# install it if it isn't already installed. After a successful install, set it
+# as the user (global) default with "asdf set -u", unless that plugin's current
+# global default is "system".
+#
+# The latest version comes from "asdf latest --all". When that can't resolve a
+# version for a plugin ("No compatible versions available"), fall back to the
+# highest version returned by "asdf list all <plugin>", sorted by semver.
+#
+# Usage: asdf-update
+
+set -uo pipefail
+
+tv_file="$HOME/${ASDF_DEFAULT_TOOL_VERSIONS_FILENAME:-.tool-versions}"
+
+# Returns the current global default version token for a plugin, or "" if none.
+global_default() {
+  local plugin="$1"
+  [ -f "$tv_file" ] || return 0
+  awk -v p="$plugin" '$1==p {print $2; exit}' "$tv_file"
+}
+
+# Echoes "installed" if the given version appears in "asdf list <plugin>",
+# otherwise "missing".
+install_status() {
+  local plugin="$1" version="$2"
+  if asdf list "$plugin" 2>/dev/null | grep -qE "[[:space:]*]*${version}\$"; then
+    echo "installed"
+  else
+    echo "missing"
+  fi
+}
+
+# Installs (if missing) the given plugin version and sets it as the user default
+# unless the plugin's global default is "system".
+process_plugin() {
+  local plugin="$1" version="$2" status="$3"
+
+  if [ "$status" = "missing" ]; then
+    printf "asdf-update: installing %s %s...\n" "$plugin" "$version"
+    if ! asdf install "$plugin" "$version" 2>&1 \
+         | sed -e "s/^/asdf-update: install $plugin $version> /g"; then
+      printf "asdf-update: failed to install %s %s, skipping\n" "$plugin" "$version"
+      return 1
+    fi
+  else
+    printf "asdf-update: %s %s already installed\n" "$plugin" "$version"
+  fi
+
+  local default
+  default="$(global_default "$plugin")"
+  if [ "$default" = "system" ]; then
+    printf "asdf-update: %s default is 'system', not changing default\n" "$plugin"
+  else
+    printf "asdf-update: setting %s default to %s\n" "$plugin" "$version"
+    asdf set -u "$plugin" "$version"
+  fi
+}
+
+# "asdf latest --all" prints: <plugin>\t<version>\t<installed|missing>
+# Non-resolvable plugins emit a "No compatible versions available (<plugin> )"
+# line instead, for which we fall back to the highest "asdf list all" version.
+asdf latest --all | while IFS= read -r line; do
+  # Normal tab-separated row: plugin, latest version, install status.
+  if printf '%s' "$line" | grep -q $'\t'; then
+    IFS=$'\t' read -r plugin version status <<<"$line"
+    [ -z "$plugin" ] || [ -z "$version" ] && continue
+    process_plugin "$plugin" "$version" "$status"
+    continue
+  fi
+
+  # Fallback: "No compatible versions available (<plugin> )".
+  nocompat_re='No compatible versions available \(([^ )]+)'
+  if [[ "$line" =~ $nocompat_re ]]; then
+    plugin="${BASH_REMATCH[1]}"
+    version="$(asdf list all "$plugin" 2>/dev/null | sort -V | tail -n 1)"
+    if [ -z "$version" ]; then
+      printf "asdf-update: no versions available for %s, skipping\n" "$plugin"
+      continue
+    fi
+    printf "asdf-update: %s unresolved by 'latest', using highest from 'list all': %s\n" \
+      "$plugin" "$version"
+    status="$(install_status "$plugin" "$version")"
+    process_plugin "$plugin" "$version" "$status"
+  fi
+done
+
+asdf reshim

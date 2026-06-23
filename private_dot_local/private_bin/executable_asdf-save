@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# asdf-save - Dump asdf plugins, their git URL, installed versions, and the
+# user's global default version (from ~/.tool-versions), then write the data
+# (wrapped under an "asdf" key) into chezmoi's data store at
+# "$(chezmoi source-path)/.chezmoidata/asdf.json".
+#
+# Usage: asdf-save
+
+set -euo pipefail
+
+src="$(chezmoi source-path)"
+dest="$src/.chezmoidata/asdf.json"
+
+data_dir="${ASDF_DATA_DIR:-$HOME/.asdf}"
+tv_file="$HOME/${ASDF_DEFAULT_TOOL_VERSIONS_FILENAME:-.tool-versions}"
+
+{
+for dir in "$data_dir"/plugins/*/; do
+  [ -d "$dir" ] || continue
+
+  name=$(basename "$dir")
+  url=$(git -C "$dir" remote get-url origin 2>/dev/null || true)
+
+  # First version token for this plugin in the user's global .tool-versions.
+  default=""
+  if [ -f "$tv_file" ]; then
+    default=$(awk -v p="$name" '$1==p {print $2; exit}' "$tv_file")
+  fi
+
+  # Installed versions are the immediate subdirectories of installs/<name>.
+  versions='[]'
+  if [ -d "$data_dir/installs/$name" ]; then
+    versions=$(find "$data_dir/installs/$name" -mindepth 1 -maxdepth 1 -type d \
+                 -printf '%f\n' 2>/dev/null | sort | jq -R . | jq -s .)
+  fi
+
+  jq -n \
+    --arg n "$name" \
+    --arg u "$url" \
+    --arg d "$default" \
+    --argjson v "$versions" \
+    '{name:$n, url:$u, default:(if $d=="" then null else $d end), versions:$v}'
+done | jq -s '{asdf: .}'
+} > "$dest"
+
+printf "asdf-save: wrote %s\n" "$dest"
