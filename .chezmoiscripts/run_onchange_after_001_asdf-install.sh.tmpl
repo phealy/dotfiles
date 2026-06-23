@@ -1,5 +1,11 @@
 {{- if eq .chezmoi.os "linux" -}}
 #! /bin/bash
+
+# SHA sums for triggering script execution:
+# {{ include ".chezmoidata/asdf.yaml" | sha256sum }}
+# {{ include "dot_tool-versions_work" | sha256sum }}
+# 
+
 {{ range $name, $value := .asdf }}
 # Install {{ $name }} asdf plugin and version
 asdf plugin list | grep -qx "{{ $name }}" || {

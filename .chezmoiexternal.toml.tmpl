@@ -2,6 +2,8 @@
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "asdf-vm/asdf" (printf "asdf-v*-%s-%s.tar.gz" .chezmoi.os .chezmoi.arch) | quote }}
     path = "asdf"
+    executable = true
+    private = true
     refreshPeriod = "168h"
 [".local/lib/oh-my-zsh"]
     type = "git-repo"
@@ -27,3 +29,9 @@
     type = "git-repo"
     url = "https://github.com/ConradIrwin/vim-bracketed-paste.git"
     refreshPeriod = "168h"
+{{- $f := stat ".resources/dracula_pro_2.2.2.zip" -}}
+{{- if $f }}
+[".local/share/draculapro"]
+    type = "archive"
+    url = "file://{{ joinPath .chezmoi.sourceDir ".resources" "dracula_pro_2.2.2.zip" }}"
+{{- end }}

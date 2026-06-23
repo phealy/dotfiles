@@ -14,3 +14,4 @@ powershell-core 7.6.3
 stern 1.34.0
 yq 4.53.3
 ohmyposh 29.17.0
+python3 system

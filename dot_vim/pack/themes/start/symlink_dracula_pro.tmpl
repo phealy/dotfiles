@@ -1,0 +1,4 @@
+{{- $d := stat (joinPath .chezmoi.homeDir ".local" "share" "draculapro") -}}
+{{- if $d -}}
+{{ joinPath .chezmoi.homeDir ".local" "share" "draculapro" "themes" "vim" }}
+{{- end }}
