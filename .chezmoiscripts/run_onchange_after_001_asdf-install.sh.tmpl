@@ -2,30 +2,24 @@
 #! /bin/bash
 
 # SHA sums for triggering script execution:
-# {{ include ".chezmoidata/asdf.yaml" | sha256sum }}
-# {{ include "dot_tool-versions_work" | sha256sum }}
-# 
+# {{ include ".chezmoidata/asdf.json" | sha256sum }}
+# {{ include (joinPath .chezmoi.sourceDir (print "/dot_tool-versions_" .machineType)) | sha256sum }}
 
-{{ range $name, $value := .asdf }}
-# Install {{ $name }} asdf plugin and version
-asdf plugin list | grep -qx "{{ $name }}" || {
-    printf "asdf: Installing plugin {{ $name }}...\n"
-    asdf plugin add "{{ $name }}" "{{ get $value "url" }}" 2>&1 | sed -e "s/^/asdf: plugin add {{ $name }}> /g"
+{{ range $plugin := .asdf -}}
+# Install {{ $plugin.name }} asdf plugin and versions
+asdf plugin list | grep -qx "{{ $plugin.name }}" || {
+    printf "asdf: Installing plugin {{ $plugin.name }}...\n"
+    asdf plugin add "{{ $plugin.name }}" "{{ $plugin.url }}" 2>&1 | sed -e "s/^/asdf: plugin add {{ $plugin.name }}> /g"
 }
-{{- if ne (get $value "version") "" }}
-asdf list "{{ $name }}" | grep -q "{{ get $value "version" }}" || {
-    printf "asdf: Installing tool version {{ $name }} {{ $value.version }}...\n"
-    asdf install "{{ $name }}" "{{ $value.version }}" 2>&1 | sed -e "s/^/asdf: install {{ $name }} {{ $value.version }}> /g"
-    asdf set -u "{{ $name }}" "{{ $value.version }}"
-}
-{{ else }}
-asdf list "{{ $name }}" 2>&1 | grep -q "No compatible versions installed" && {
-    version="$(asdf list all '{{ $name }}' | sort -V | tail -n 1)"
-    printf "asdf: Installing tool version {{ $name }} ${version}...\n"
-    asdf install "{{ $name }}" "${version}" 2>&1 | sed -e "s/^/asdf: install {{ $name }} ${version}> /g"
-    asdf set -u "{{ $name }}" "${version}"
+{{- range $version := $plugin.versions }}
+asdf list "{{ $plugin.name }}" | grep -q "{{ $version }}" || {
+    printf "asdf: Installing tool version {{ $plugin.name }} {{ $version }}...\n"
+    asdf install "{{ $plugin.name }}" "{{ $version }}" 2>&1 | sed -e "s/^/asdf: install {{ $plugin.name }} {{ $version }}> /g"
 }
 {{- end }}
+{{- if $plugin.default }}
+asdf set -u "{{ $plugin.name }}" "{{ $plugin.default }}"
 {{- end }}
+{{ end }}
 asdf reshim
 {{ end -}}

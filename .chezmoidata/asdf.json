@@ -1,0 +1,132 @@
+{
+  "asdf": [
+    {
+      "name": "azure-cli",
+      "url": "https://github.com/EcoMind/asdf-azure-cli.git",
+      "default": "2.87.0",
+      "versions": [
+        "2.87.0"
+      ]
+    },
+    {
+      "name": "chezmoi",
+      "url": "https://github.com/joke/asdf-chezmoi.git",
+      "default": "2.70.5",
+      "versions": [
+        "2.70.5"
+      ]
+    },
+    {
+      "name": "direnv",
+      "url": "https://github.com/asdf-community/asdf-direnv.git",
+      "default": "2.37.1",
+      "versions": [
+        "2.37.1"
+      ]
+    },
+    {
+      "name": "fzf",
+      "url": "https://github.com/kompiro/asdf-fzf.git",
+      "default": "0.73.1",
+      "versions": [
+        "0.73.1"
+      ]
+    },
+    {
+      "name": "github-cli",
+      "url": "https://github.com/bartlomiejdanek/asdf-github-cli.git",
+      "default": "2.95.0",
+      "versions": [
+        "2.95.0"
+      ]
+    },
+    {
+      "name": "golang",
+      "url": "https://github.com/asdf-community/asdf-golang.git",
+      "default": "1.26.4",
+      "versions": [
+        "1.26.4"
+      ]
+    },
+    {
+      "name": "helm",
+      "url": "https://github.com/Antiarchitect/asdf-helm.git",
+      "default": "4.2.2",
+      "versions": [
+        "4.2.2"
+      ]
+    },
+    {
+      "name": "k9s",
+      "url": "https://github.com/looztra/asdf-k9s.git",
+      "default": "0.51.0",
+      "versions": [
+        "0.51.0"
+      ]
+    },
+    {
+      "name": "krew",
+      "url": "https://github.com/bjw-s/asdf-krew.git",
+      "default": "0.5.0",
+      "versions": [
+        "0.5.0"
+      ]
+    },
+    {
+      "name": "kubectl",
+      "url": "https://github.com/asdf-community/asdf-kubectl.git",
+      "default": "1.36.2",
+      "versions": [
+        "1.36.2"
+      ]
+    },
+    {
+      "name": "kubelogin",
+      "url": "https://github.com/sechmann/asdf-kubelogin.git",
+      "default": "0.2.18",
+      "versions": [
+        "0.2.18"
+      ]
+    },
+    {
+      "name": "ohmyposh",
+      "url": "https://github.com/splinter98/asdf-ohmyposh.git",
+      "default": "29.17.0",
+      "versions": [
+        "29.17.0"
+      ]
+    },
+    {
+      "name": "powershell-core",
+      "url": "https://github.com/daveneeley/asdf-powershell-core.git",
+      "default": "7.6.3",
+      "versions": [
+        "7.6.3"
+      ]
+    },
+    {
+      "name": "python",
+      "url": "https://github.com/danhper/asdf-python.git",
+      "default": "3.14.6t",
+      "versions": [
+        "3.14.6t"
+      ]
+    },
+    {
+      "name": "stern",
+      "url": "https://github.com/looztra/asdf-stern.git",
+      "default": "1.34.0",
+      "versions": [
+        "1.34.0"
+      ]
+    },
+    {
+      "name": "yq",
+      "url": "https://github.com/sudermanjr/asdf-yq.git",
+      "default": "4.53.3",
+      "versions": [
+        "4.53.3"
+      ]
+    }
+  ]
+}
