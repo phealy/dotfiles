@@ -29,6 +29,7 @@
       "url": "https://github.com/kompiro/asdf-fzf.git",
       "default": "0.73.1",
       "versions": [
+        "0.23.1",
         "0.73.1"
       ]
     },
@@ -85,7 +86,8 @@
       "url": "https://github.com/sechmann/asdf-kubelogin.git",
       "default": "0.2.18",
       "versions": [
-        "0.2.18"
+        "0.2.18",
+        "0.2.19"
       ]
     },
     {
@@ -93,7 +95,8 @@
       "url": "https://github.com/splinter98/asdf-ohmyposh.git",
       "default": "29.17.0",
       "versions": [
-        "29.17.0"
+        "29.17.0",
+        "29.18.0"
       ]
     },
     {
@@ -118,6 +121,14 @@
       "default": "1.34.0",
       "versions": [
         "1.34.0"
+      ]
+    },
+    {
+      "name": "uv",
+      "url": "https://github.com/asdf-community/asdf-uv.git",
+      "default": null,
+      "versions": [
+        "0.11.24"
       ]
     },
     {
