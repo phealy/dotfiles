@@ -9,6 +9,10 @@
 	defaultBranch = main
 [credential]
 	helper = cache
+{{- if and (eq .machineType "work") (not (empty (lookPath "git-credential-manager"))) }}
+	helper = /usr/bin/git-credential-manager
+	credentialStore = secretservice
+{{- end -}}
 {{- if and (eq .machineType "work") (not (empty (lookPath "asdf"))) (not (empty (lookPath "git-credential-azure-cli"))) }}
 {{- print "\n\thelper = " (joinPath (output "asdf" "where" "golang") "bin" "git-credential-azure-cli") }}
 {{- end -}}
@@ -20,6 +24,14 @@
 	allowedDomain = visualstudio.com
 	allowedDomain = dev.azure.com
 	allowedDomain = goproxyprod.goms.io
+[azureCliCredentialHelper "https://msazure.visualstudio.com"]
+	resource = https://tfsprodwus24.visualstudio.com
 [azureCliCredentialHelper "https://goproxyprod.goms.io"]
 	resource = https://microsoft.onmicrosoft.com/AKSGoProxyMSFT
+{{- end }}
+{{- if and (eq .machineType "work") (not (empty (lookPath "git-credential-manager"))) }}
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+[credential "azrepos:org/msazure"]
+	username = pahealy@microsoft.com
 {{ end }}
