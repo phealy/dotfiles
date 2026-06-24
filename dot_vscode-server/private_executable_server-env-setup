@@ -1,0 +1,10 @@
+#! /bin/bash
+
+set -euo pipefail
+
+TMPFILE=$(mktemp)
+trap 'rm $TMPFILE' EXIT
+bash --login --noprofile --norc -t -c '. ~/.commonrc; export -p' | sed -e 's/declare -x/export/' | sed -e 's/$/;/g' > $TMPFILE
+. $TMPFILE
+rm $TMPFILE
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
