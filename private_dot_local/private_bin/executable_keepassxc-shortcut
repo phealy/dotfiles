@@ -1,0 +1,33 @@
+#!/usr/bin/env gjs
+// KeePassXC toggle for GNOME Wayland, using the "Window Calls" extension
+// (https://github.com/ickyicky/window-calls) for window introspection/control.
+//
+// Behaviour:
+//   * KeePassXC window is the active/focused window -> close it (minimise to tray)
+//   * KeePassXC window exists but is in the background -> activate (raise/focus) it
+//   * Otherwise (minimised to tray, or not running) -> launch it. KeePassXC is 
+//     single-instance, so this restores an existing tray instance if already running.
+
+const { Gio, GLib } = imports.gi;
+
+function winCall(method, params) {
+    return Gio.DBus.session.call_sync(
+        "org.gnome.Shell", "/org/gnome/Shell/Extensions/Windows",
+        "org.gnome.Shell.Extensions.Windows", method, params, null,
+        Gio.DBusCallFlags.NONE, -1, null);
+}
+
+const wins = JSON.parse(winCall("List", null).get_child_value(0).get_string()[0]);
+const kxc = wins.filter(w => w.wm_class === "org.keepassxc.KeePassXC");
+const focused = kxc.find(w => w.focus);
+
+if (focused) {              // Active window -> close it.
+    winCall("Close", new GLib.Variant("(u)", [focused.id]));
+} else if (kxc.length) {    // Background window -> raise/focus it.
+    winCall("Activate", new GLib.Variant("(u)", [kxc[0].id]));
+} else {                    // No window -> launch it.
+    GLib.spawn_async(null, [GLib.get_home_dir() + "/.local/bin/keepassxc-tpm2"],
+        null,
+        GLib.SpawnFlags.STDOUT_TO_DEV_NULL | GLib.SpawnFlags.STDERR_TO_DEV_NULL,
+        null);
+}

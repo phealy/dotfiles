@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Launch KeePassXC, decrypting the database password from the TPM via clevis.
+# KeePassXC is single-instance, so running this while it's already open simply
+# restores/raises the existing instance.
+export QT_QPA_PLATFORM=wayland
+sudo -u tss clevis-decrypt-tpm2 <~/.config/keepassxc.tpm2 \
+    | keepassxc --pw-stdin ~/Downloads/Keepass.kdbx
