@@ -26,7 +26,7 @@ if (focused) {              // Active window -> close it.
 } else if (kxc.length) {    // Background window -> raise/focus it.
     winCall("Activate", new GLib.Variant("(u)", [kxc[0].id]));
 } else {                    // No window -> launch it.
-    GLib.spawn_async(null, [GLib.get_home_dir() + "/.local/bin/keepassxc-tpm2"],
+    GLib.spawn_async(null, [GLib.get_home_dir() + "/.local/bin/keepassxc-secretstore"],
         null,
         GLib.SpawnFlags.STDOUT_TO_DEV_NULL | GLib.SpawnFlags.STDERR_TO_DEV_NULL,
         null);

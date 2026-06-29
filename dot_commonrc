@@ -86,14 +86,6 @@ esac
 # }}}
 # ls color support and aliases {{{
 export LSCOLORS="Exgxcxdxbxegedabagfxfx"
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto -h'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-fi
 # }}}
 # program settings {{{
 export CDPATH=~
@@ -198,6 +190,7 @@ alias la='ls -Ah --group-directories-first --color'
 alias ll='ls -lFh --group-directories-first --color'
 alias ls='ls -CFh --group-directories-first --color'
 alias lla='ls -alFh'
+alias omp='oh-my-posh'
 alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'
 alias sshi='ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
 alias winclip='powershell.exe -c '\''$stdin = @($input); if ($stdin) { Set-Clipboard $stdin } else { Get-Clipboard }'\'
