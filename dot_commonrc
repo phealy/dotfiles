@@ -29,6 +29,8 @@ elif [[ -S $HOME/.ssh/ssh_auth_sock ]]; then
   export SSH_AUTH_SOCK=$HOME/.ssh/ssh_auth_sock
 elif [[ -S $XDG_RUNTIME_DIR/ssh-agent.socket ]]; then
   export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
+elif [[ -S $XDG_RUNTIME_DIR/gcr/ssh ]]; then
+  export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
 fi
 # }}}
 # start x server if running on vty1 {{{
