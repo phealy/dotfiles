@@ -127,6 +127,7 @@ command -v az &>/dev/null && {
 command -v chezmoi &>/dev/null && {
     alias cm='chezmoi'
     alias cma='chezmoi add'
+    alias cmae='chezmoi add --encrypt'
     alias cmap='chezmoi apply'
     alias cmapr='chezmoi apply -R'
     alias cmat='chezmoi add -T'
@@ -193,6 +194,7 @@ alias ll='ls -lFh --group-directories-first --color'
 alias ls='ls -CFh --group-directories-first --color'
 alias lla='ls -alFh'
 alias omp='oh-my-posh'
+command -v open &>/dev/null || {{ alias open="xdg-open" }}
 alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'
 alias sshi='ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
 alias winclip='powershell.exe -c '\''$stdin = @($input); if ($stdin) { Set-Clipboard $stdin } else { Get-Clipboard }'\'
@@ -223,6 +225,7 @@ if [[ ! -z "${WSL_INTEROP}" ]]; then
 fi
 # }}}
 # Local overrides {{{
+[[ -f $HOME/.commonrc_work ]] && . $HOME/.commonrc_work
 [[ -f $HOME/.commonrc_local ]] && . $HOME/.commonrc_local
 # }}}
 

@@ -12,10 +12,18 @@
 {{- else -}}
     {{- $email = "patrick.healy@microsoft.com" -}}
 {{- end -}}
+{{ if eq $machineType "work" }}encryption: age
+age:
+    identity: ~/.config/chezmoi-age/encrypt.key
+    recipient: age15r8j3elnljrlgq7unclq6m9k48kqvsv4vrxxer7cat0emx33my0q0vpv87
+{{- end }}
 chezmoi:
     progress: true
     add:
         secrets: error
+{{ if eq $machineType "work" }}azureKeyVault:
+    defaultVault: pahealyaks
+{{- end }}
 data:
     machineType: {{ $machineType | quote }}
     name: "Patrick W. Healy"
