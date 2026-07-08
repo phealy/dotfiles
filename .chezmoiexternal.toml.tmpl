@@ -29,3 +29,12 @@
     type = "git-repo"
     url = "https://github.com/ConradIrwin/vim-bracketed-paste.git"
     refreshPeriod = "168h"
+{{- if eq .machineType "work" }}
+[".local/bin/kubectl-unbounded"]
+    type = "archive-file"
+    url = "https://github.com/Azure/unbounded/releases/latest/download/kubectl-unbounded-linux-amd64.tar.gz"
+    path = "kubectl-unbounded"
+    executable = true
+    private = true
+    refreshPeriod = "24h"
+{{ end -}}

@@ -28,25 +28,31 @@ echo -e "Setting up K8s node SSH for ${NODE_NAME}/${NODE_IP}:\n"
 delete_service () { # Set a hook to clean up the service when we're done
     ARG=$?
     echo ""
-    kubectl --context=$CONTEXT --namespace=$NAMESPACE delete service/$SVC_NAME --wait=false
+    kubectl --context=$CONTEXT --namespace=$NAMESPACE delete service/$SVC_NAME endpointslices.discovery.k8s.io/$SVC_NAME --wait=false --ignore-not-found
     exit $ARG
 } 
 trap delete_service EXIT
 
-echo -n "Creating endpoint object...      "
+echo -n "Creating endpoint slice...       "
 kubectl --context=$CONTEXT apply -f - <<EOF
-kind: Endpoints
-apiVersion: v1
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: $SVC_NAME
   namespace: $NAMESPACE
   labels:
+    kubernetes.io/service-name: $SVC_NAME
+    endpointslice.kubernetes.io/managed-by: kubectl-node_ssh
     node: $NODE_NAME
-subsets:
+addressType: IPv4
+ports:
+  - protocol: TCP
+    port: 22
+endpoints:
   - addresses:
-      - ip: $NODE_IP
-    ports:
-      - port: 22
+      - $NODE_IP
+    conditions:
+      ready: true
 EOF
 
 echo -n "Creating service object...       "
@@ -61,7 +67,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - protocol: TCP
+  - protocol: 
     port: 22
     targetPort: 22
 EOF
