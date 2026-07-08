@@ -1,31 +1,30 @@
-" Vim defaults {{{
+" Vim defaults {{"{{/*fold-start*/}}"}}
 set nocompatible
 if version >= 800
     unlet! skip_defaults_vim
     source $VIMRUNTIME/defaults.vim
 endif
-" }}}
-" Colors {{{
-if version >= 800
-    packadd! dracula_pro
-    syntax enable           " enable syntax processing
-    let g:dracula_colorterm = 0
-    colorscheme dracula_pro_van_helsing
-else
-    syntax enable
-    colorscheme badwolf
-endif
+" {{"{{/*fold-end*/}}"}}
+" Colors {{"{{/*fold-start*/}}"}}
+{{ if stat (joinPath .chezmoi.homeDir ".local/share/draculapro/themes/vim") -}}
+packadd! dracula_pro
+let g:dracula_colorterm = 0
+colorscheme dracula_pro_van_helsing
+{{- else }}
+colorscheme badwolf
+{{- end }}
+syntax enable           " enable syntax processing
 
 "set termguicolors
-" }}}
-" Misc {{{
+" {{"{{/*fold-end*/}}"}}
+" Misc {{"{{/*fold-start*/}}"}}
 set backspace=indent,eol,start
 let g:vimwiki_list = [{'path': '~/.wiki/'}]
 set clipboard=unnamed
 set shortmess=I " Read :help shortmess for everything else.
 set virtualedit+=onemore
-" }}}
-" Spaces & Tabs {{{
+" {{"{{/*fold-end*/}}"}}
+" Spaces & Tabs {{"{{/*fold-start*/}}"}}
 set tabstop=4           " 4 space tab
 set expandtab           " use spaces for tabs
 set softtabstop=4       " 4 space tab
@@ -35,8 +34,8 @@ set modelines=1
 filetype indent on
 filetype plugin on
 set autoindent
-" }}}
-" UI Layout {{{
+" {{"{{/*fold-end*/}}"}}
+" UI Layout {{"{{/*fold-start*/}}"}}
 set number              " show line numbers
 set showcmd             " show command in bottom bar
 set nocursorline        " highlight current line
@@ -44,26 +43,26 @@ set wildmenu
 set lazyredraw
 set showmatch           " higlight matching parenthesis
 set fillchars+=vert:┃
-" }}}
-" Searching {{{
+" {{"{{/*fold-end*/}}"}}
+" Searching {{"{{/*fold-start*/}}"}}
 set ignorecase          " ignore case when searching
 set incsearch           " search as characters are entered
 set hlsearch            " highlight all matches
-" }}}
-" Folding {{{
+" {{"{{/*fold-end*/}}"}}
+" Folding {{"{{/*fold-start*/}}"}}
 "=== folding ===
 set foldmethod=indent   " fold based on indent level
 set foldnestmax=10      " max 10 depth
 set foldenable          " don't fold files by default on open
 nnoremap <space> za
 set foldlevelstart=10   " start with fold level of 1
-" }}}
-" Line Shortcuts {{{
+" {{"{{/*fold-end*/}}"}}
+" Line Shortcuts {{"{{/*fold-start*/}}"}}
 nnoremap j gj
 nnoremap k gk
 nnoremap gV `[v`]
-" }}}
-" Leader Shortcuts {{{
+" {{"{{/*fold-end*/}}"}}
+" Leader Shortcuts {{"{{/*fold-start*/}}"}}
 let mapleader=","
 nnoremap <leader>m :silent make\|redraw!\|cw<CR>
 nnoremap <leader>h :A<CR>
@@ -82,19 +81,19 @@ nnoremap <leader>t :TestFile<CR>
 nnoremap <leader>r :call <SID>RunFile()<CR>
 nnoremap <leader>b :call <SID>BuildFile()<CR>
 vnoremap <leader>y "+y
-" }}}
-" CtrlP {{{
+" {{"{{/*fold-end*/}}"}}
+" CtrlP {{"{{/*fold-start*/}}"}}
 let g:ctrlp_match_window = 'bottom,order:ttb'
 let g:ctrlp_switch_buffer = 0
 let g:ctrlp_working_path_mode = 0
 let g:ctrlp_custom_ignore = '\vbuild/|dist/|venv/|target/|\.(o|swp|pyc|egg)$'
-" }}}
-" Syntastic {{{
+" {{"{{/*fold-end*/}}"}}
+" Syntastic {{"{{/*fold-start*/}}"}}
 let g:syntastic_python_flake8_args='--ignore=E501'
 let g:syntastic_ignore_files = ['.java$']
 let g:syntastic_python_python_exec = 'python3'
-" }}}
-" AutoGroups {{{
+" {{"{{/*fold-end*/}}"}}
+" AutoGroups {{"{{/*fold-start*/}}"}}
 augroup configgroup
     autocmd!
     autocmd VimEnter * highlight clear SignColumn
@@ -110,28 +109,28 @@ augroup configgroup
     autocmd BufEnter *.go setlocal noexpandtab
     autocmd BufEnter *.avsc setlocal ft=json
 augroup END
-" }}}
-" Testing {{{
+" {{"{{/*fold-end*/}}"}}
+" Testing {{"{{/*fold-start*/}}"}}
 let test#strategy = 'neovim'
 let test#python#runner = 'nose'
-" }}}
-" Backups {{{
+" {{"{{/*fold-end*/}}"}}
+" Backups {{"{{/*fold-start*/}}"}}
 set backup
 set backupdir=~/.vim-tmp,~/.tmp,/var/tmp,/tmp
 set backupskip=~/tmp/*,/tmp/*,/private/tmp/*
 set directory=~/.vim-tmp,~/.tmp,/var/tmp,/tmp
 set writebackup
-" }}}
-" History {{{
+" {{"{{/*fold-end*/}}"}}
+" History {{"{{/*fold-start*/}}"}}
 set history=10000
-" }}}
-" YAML {{{
+" {{"{{/*fold-end*/}}"}}
+" YAML {{"{{/*fold-start*/}}"}}
 " add yaml stuffs
 " au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 " autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-" }}}
-" Disable mouse {{{
+" {{"{{/*fold-end*/}}"}}
+" Disable mouse {{"{{/*fold-start*/}}"}}
 set mouse=
-" }}}
+" {{"{{/*fold-end*/}}"}}
 
-" vim:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=0:foldmarker={{"{{/*fold-start*/}},{{/*fold-end*/}}"}}:

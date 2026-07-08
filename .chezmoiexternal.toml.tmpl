@@ -29,9 +29,3 @@
     type = "git-repo"
     url = "https://github.com/ConradIrwin/vim-bracketed-paste.git"
     refreshPeriod = "168h"
-{{- $f := stat ".resources/dracula_pro_2.2.2.zip" -}}
-{{- if $f }}
-[".local/share/draculapro"]
-    type = "archive"
-    url = "file://{{ joinPath .chezmoi.sourceDir ".resources" "dracula_pro_2.2.2.zip" }}"
-{{- end }}
