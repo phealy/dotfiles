@@ -1,5 +1,4 @@
 .tool-versions_*
-.resources/
 {{- if ne .machineType "work" }}
 .local/bin/kasi
 .local/bin/kasinode

@@ -27,18 +27,20 @@
     {
       "name": "fzf",
       "url": "https://github.com/kompiro/asdf-fzf.git",
-      "default": "0.73.1",
+      "default": "0.74.0",
       "versions": [
         "0.23.1",
-        "0.73.1"
+        "0.73.1",
+        "0.74.0"
       ]
     },
     {
       "name": "github-cli",
       "url": "https://github.com/bartlomiejdanek/asdf-github-cli.git",
-      "default": "2.95.0",
+      "default": "2.96.0",
       "versions": [
-        "2.95.0"
+        "2.95.0",
+        "2.96.0"
       ]
     },
     {
@@ -84,19 +86,29 @@
     {
       "name": "kubelogin",
       "url": "https://github.com/sechmann/asdf-kubelogin.git",
-      "default": "0.2.18",
+      "default": "0.2.19",
       "versions": [
         "0.2.18",
         "0.2.19"
       ]
     },
     {
+      "name": "nodejs",
+      "url": "https://github.com/asdf-vm/asdf-nodejs.git",
+      "default": "26.4.0",
+      "versions": [
+        "26.4.0"
+      ]
+    },
+    {
       "name": "ohmyposh",
       "url": "https://github.com/splinter98/asdf-ohmyposh.git",
-      "default": "29.17.0",
+      "default": "29.21.0",
       "versions": [
         "29.17.0",
-        "29.18.0"
+        "29.18.0",
+        "29.19.0",
+        "29.21.0"
       ]
     },
     {
@@ -126,9 +138,11 @@
     {
       "name": "uv",
       "url": "https://github.com/asdf-community/asdf-uv.git",
-      "default": "0.11.24",
+      "default": "0.11.26",
       "versions": [
-        "0.11.24"
+        "0.11.24",
+        "0.11.25",
+        "0.11.26"
       ]
     },
     {

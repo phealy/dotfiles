@@ -1,3 +1,39 @@
-#! /bin/bash
+#!/usr/bin/env python3
 
-kubectl get --show-kind $(kubectl api-resources --verbs=list --namespaced -o name | grep -v -e events | paste -d, -s) "$@"
+import argparse
+import subprocess
+import sys
+
+
+def api_resources(namespaced):
+    out = subprocess.run(
+        ["kubectl", "api-resources", "--verbs=list",
+         f"--namespaced={'true' if namespaced else 'false'}", "-o", "name"],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    return [line for line in out.splitlines() if line and line != "events"]
+
+
+def main():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-C", "--cluster-scope", action="store_true")
+    args, extra = parser.parse_known_args()
+
+    kinds = api_resources(namespaced=True)
+    if args.cluster_scope:
+        kinds += api_resources(namespaced=False)
+
+    kinds = ",".join(sorted(kinds))
+
+    proc = subprocess.Popen(
+        ["kubectl", "get", "--show-kind", kinds, *extra],
+        stderr=subprocess.PIPE, text=True,
+    )
+    for line in proc.stderr:
+        if "is deprecated in" not in line or not line.startswith("Warning: "):
+            sys.stderr.write(line)
+    sys.exit(proc.wait())
+
+
+if __name__ == "__main__":
+    main()

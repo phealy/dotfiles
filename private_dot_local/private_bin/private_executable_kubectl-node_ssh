@@ -3,7 +3,7 @@
 set -eo pipefail
 
 if [[ "$1" == "" && -x "$(which fzf)" ]]; then
-  NODE_NAME=$(FZF_DEFAULT_COMMAND='kubectl get nodes' fzf -1 --header-lines=1 --height=25% | awk '{print $1}')
+  NODE_NAME=$(FZF_DEFAULT_COMMAND='kubectl get nodes' fzf -1 --header-lines=1 --height=25% --accept-nth=1)
 elif [[ "$1" == "" ]]; then
   echo "Please specify a node name on the command line or install fzf to select dynamically."
   exit 255

@@ -170,8 +170,8 @@ alias fixpaste="bash -c \"printf '\e[?2004l'\""
 alias kak='kubectl apply -k'
 alias kctx='kubectl ctx'
 alias ${ZSH_VERSION:+-g} kfqdn="kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.server}' | sed -e 's!https\?://\(.*\):[0-9]\+/\?!\1!g'"
-alias ${ZSH_VERSION:+-g} kga='kubectl get --show-kind $(kubectl api-resources --verbs=list --namespaced -o name | grep -v -e events | paste -d, -s)'
-alias ${ZSH_VERSION:+-g} kgA='kubectl get --show-kind -A $(cat <(kubectl api-resources --verbs=list --namespaced=true -o name) <(kubectl api-resources --verbs=list --namespaced=false -o name) | grep -v -e events | paste -d, -s)'
+alias ${ZSH_VERSION:+-g} kga='kubectl get-all'
+alias ${ZSH_VERSION:+-g} kgca='kubectl get-all -CA'
 alias ${ZSH_VERSION:+-g} kgno='kubectl get nodes -o wide -L kubernetes.io/arch -L node.kubernetes.io/instance-type -L kubernetes.azure.com/mode -L topology.kubernetes.io/zone'
 alias ${ZSH_VERSION:+-g} kgp='kubectl get pods -o wide'
 alias ${ZSH_VERSION:+-g} kgpa='kubectl get pods -A -o wide'
