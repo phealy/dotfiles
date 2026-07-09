@@ -3,7 +3,7 @@
 
 # SHA sums for triggering script execution:
 # {{ include ".chezmoidata/asdf.json" | sha256sum }}
-# {{ include (joinPath .chezmoi.sourceDir (print "/dot_tool-versions_" .machineType)) | sha256sum }}
+# {{ include (joinPath .chezmoi.sourceDir (print "private_dot_tool-versions_" .machineType)) | sha256sum }}
 
 {{ range $plugin := .asdf -}}
 # Install {{ $plugin.name }} asdf plugin and versions
