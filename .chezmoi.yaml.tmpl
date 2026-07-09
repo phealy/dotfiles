@@ -1,11 +1,11 @@
 {{- $machineTypes := list "personal" "work" "container" -}}
 {{- $machineType := "" -}}
-{{- if stat (joinPath .chezmoi.homeDir ".cmcontainer") -}}
-    {{- $machineType := "container" -}}
+{{- if and (stat (joinPath .chezmoi.homeDir ".cmcontainer")) (eq .chezmoi.username "phealy") -}}
+    {{- $machineType = "work" -}}
 {{- else if eq .chezmoi.username "phealy" -}}
-    {{- $machineType := promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "work" -}}
+    {{- $machineType = promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "work" -}}
 {{- else if eq .chezmoi.username "pahealy" -}}
-    {{- $machineType := promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "personal" -}}
+    {{- $machineType = promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "personal" -}}
 {{- end -}}
 {{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" -}}
 {{- $email := "" -}}

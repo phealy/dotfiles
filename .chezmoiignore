@@ -1,8 +1,6 @@
 {{- if not (stat (joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key")) -}}
 # Skip encrypted files when the encryption key isn't present.
-.commonrc_work
-.local/bin/kasi
-.local/bin/kasinode
+**/*.age
 {{- end -}}
 
 container
