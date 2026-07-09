@@ -1,7 +1,7 @@
 FROM ubuntu:26.04
 
 RUN apt-get update && apt-get install -y \
-    curl git iproute2 nmap zsh tmux mosh ssh \
+    curl git iproute2 zsh tmux mosh ssh \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
 

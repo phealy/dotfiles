@@ -1,7 +1,7 @@
 {{- $machineTypes := list "personal" "work" "container" -}}
 {{- $machineTypeDefault := "" -}}
 {{- if stat (joinPath .chezmoi.homeDir ".cmcontainer") -}}
-    {{- $machineType = "container" -}}
+    {{- $machineType := "container" -}}
 {{- else if eq .chezmoi.username "phealy" -}}
     {{- $machineType := promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "work" -}}
 {{- else if eq .chezmoi.username "pahealy" -}}
