@@ -29,8 +29,6 @@
       "url": "https://github.com/kompiro/asdf-fzf.git",
       "default": "0.74.0",
       "versions": [
-        "0.23.1",
-        "0.73.1",
         "0.74.0"
       ]
     },
@@ -48,7 +46,8 @@
       "url": "https://github.com/asdf-community/asdf-golang.git",
       "default": "1.26.4",
       "versions": [
-        "1.26.4"
+        "1.26.4",
+        "1.26.5"
       ]
     },
     {
