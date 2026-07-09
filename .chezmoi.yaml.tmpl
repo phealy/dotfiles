@@ -7,7 +7,7 @@
 {{- else if eq .chezmoi.username "pahealy" -}}
     {{- $machineType = promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "personal" -}}
 {{- end -}}
-{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" -}}
+{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" | quote -}}
 {{- $email := "" -}}
 {{- if eq $machineType "personal" -}}
     {{- $email = "phealy@phealy.com" -}}
@@ -27,7 +27,7 @@ chezmoi:
     defaultVault: pahealyaks
 {{- end }}
 data:
-{{ if stat $ageKeyPath }}    ageKeyPath: {{ $ageKeyPath }}{{ end }}
+    ageKeyPath: {{ $ageKeyPath | quote }}
     machineType: {{ $machineType | quote }}
     name: "Patrick W. Healy"
     email: {{ $email | quote }}
