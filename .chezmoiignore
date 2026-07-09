@@ -1,5 +1,6 @@
 .tool-versions_*
-{{- if ne .machineType "work" }}
+{{- if stat (joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key") }}
+.commonrc_work
 .local/bin/kasi
 .local/bin/kasinode
 {{- end }}

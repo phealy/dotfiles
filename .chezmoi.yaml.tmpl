@@ -1,5 +1,5 @@
 {{- $machineTypes := list "personal" "work" "container" -}}
-{{- $machineTypeDefault := "" -}}
+{{- $machineType := "" -}}
 {{- if stat (joinPath .chezmoi.homeDir ".cmcontainer") -}}
     {{- $machineType := "container" -}}
 {{- else if eq .chezmoi.username "phealy" -}}

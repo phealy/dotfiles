@@ -1,15 +1,16 @@
 FROM ubuntu:26.04
 
 RUN apt-get update && apt-get install -y \
-    curl git iproute2 zsh tmux mosh ssh \
+    curl git iproute2 zsh tmux mosh ssh sudo vim \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -s /usr/bin/zsh pahealy \
-    && touch /home/pahealy/.cmcontainer \
+RUN useradd -m -G sudo -s /usr/bin/zsh pahealy
+
+USER pahealy
+
+RUN touch /home/pahealy/.cmcontainer \
     && mkdir -p /home/pahealy/.local/bin \
     && curl -fsSL https://github.com/twpayne/chezmoi/releases/latest/download/chezmoi-linux-amd64 -o /home/pahealy/.local/bin/chezmoi \
     && chmod 0700 /home/pahealy/.local/bin/chezmoi \
-    && chown -R pahealy:pahealy /home/pahealy/.local
-
-USER pahealy
+    && /home/pahealy/.local/bin/chezmoi init phealy
