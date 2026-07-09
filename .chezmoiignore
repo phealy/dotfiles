@@ -3,3 +3,4 @@
 .local/bin/kasi
 .local/bin/kasinode
 {{- end }}
+container
