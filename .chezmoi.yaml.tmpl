@@ -7,16 +7,17 @@
 {{- else if eq .chezmoi.username "pahealy" -}}
     {{- $machineType := promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "personal" -}}
 {{- end -}}
+{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" -}}
 {{- $email := "" -}}
 {{- if eq $machineType "personal" -}}
     {{- $email = "phealy@phealy.com" -}}
 {{- else -}}
     {{- $email = "patrick.healy@microsoft.com" -}}
 {{- end -}}
-{{ if eq $machineType "work" }}encryption: age
+{{ if stat $ageKeyPath }}encryption: age
 age:
-    identity: ~/.config/chezmoi-age/encrypt.key
-    recipient: age15r8j3elnljrlgq7unclq6m9k48kqvsv4vrxxer7cat0emx33my0q0vpv87
+    identity: {{ $ageKeyPath }}
+    recipient: {{ output "awk" "-F" ": " "/public key/ {print $2}" $ageKeyPath }}
 {{- end }}
 chezmoi:
     progress: true
