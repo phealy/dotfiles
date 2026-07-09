@@ -5,6 +5,8 @@
 # {{ include ".chezmoidata/asdf.json" | sha256sum }}
 # {{ include (joinPath .chezmoi.sourceDir (print "private_dot_tool-versions_" .machineType)) | sha256sum }}
 
+export PATH="{{ joinPath .chezmoi.homeDir ".local" "bin" }}:$PATH"
+
 command -v asdf &>/dev/null || {
     TMPDIR="$(mktemp -d)"
     curl -fLO "$(curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r --arg arch "$arch" '.assets[].browser_download_url | select(test("linux-" + {{ .chezmoi.arch }} + "\\.tar\\.gz$"))')"
