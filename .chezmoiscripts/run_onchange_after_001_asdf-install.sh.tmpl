@@ -5,6 +5,15 @@
 # {{ include ".chezmoidata/asdf.json" | sha256sum }}
 # {{ include (joinPath .chezmoi.sourceDir (print "private_dot_tool-versions_" .machineType)) | sha256sum }}
 
+command -v asdf &>/dev/null || {
+    TMPDIR="$(mktemp -d)"
+    curl -fLO "$(curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r --arg arch "$arch" '.assets[].browser_download_url | select(test("linux-" + {{ .chezmoi.arch }} + "\\.tar\\.gz$"))')"
+	tar -xvzf asdf-v*-{{ .chezmoi.os }}-{{ .chezmoi.arch }}.tar.gz -C ~/.local/bin
+	export ASDF_DATA_DIR={{ .chezmoi.config.destDir }}/.asdf
+	export PATH="$ASDF_DATA_DIR/shims:$ASDF_DATA_DIR/bin:$PATH"
+    rm -rf "$TMPDIR"
+}
+
 {{ range $plugin := .asdf -}}
 # Install {{ $plugin.name }} asdf plugin and versions
 asdf plugin list | grep -qx "{{ $plugin.name }}" || {

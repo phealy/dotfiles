@@ -1,9 +1,11 @@
 FROM ubuntu:26.04
 
 RUN apt-get update && apt-get install -y \
-    curl git iproute2 zsh tmux mosh ssh sudo vim \
+    curl git iproute2 jq zsh tmux mosh ssh sudo vim \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo
 
 RUN useradd -m -G sudo -s /usr/bin/zsh pahealy
 
