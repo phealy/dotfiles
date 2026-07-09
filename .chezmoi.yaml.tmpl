@@ -27,6 +27,7 @@ chezmoi:
     defaultVault: pahealyaks
 {{- end }}
 data:
+{{ if stat $ageKeyPath }}    ageKeyPath: {{ $ageKeyPath }}{{ end }}
     machineType: {{ $machineType | quote }}
     name: "Patrick W. Healy"
     email: {{ $email | quote }}

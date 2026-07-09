@@ -1,0 +1,1 @@
+{{- if and (eq .machineType "work") (stat .ageKeyPath) }}{{ joinPath .chezmoi.sourceDir ".chezmoitemplates" "encrypted_dot_commonrc_work.age" | include | decrypt }}{{ end -}}
