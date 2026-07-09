@@ -3,7 +3,7 @@
 #! /bin/bash
 
 # Install missing go tools into current go version
-asdf reshim
+$HOME/.local/bin/asdf reshim
 . {{ joinPath $homeDir ".asdf" "plugins" "golang" "set-env.bash" }}
 {{ range .goTools -}}
 {{ $binaryPath := (joinPath (output (joinPath $homeDir ".local" "bin" "asdf") "where" "golang") "bin" (last (.name | splitList "/"))) }}
@@ -14,5 +14,5 @@ asdf reshim
 # Binary already available.
 {{ end -}}
 {{ end -}}
-asdf reshim
+$HOME/.local/bin/asdf reshim
 {{ end -}}
