@@ -3,17 +3,35 @@
     {
       "name": "azure-cli",
       "url": "https://github.com/EcoMind/asdf-azure-cli.git",
-      "default": "2.87.0",
+      "default": null,
       "versions": [
-        "2.87.0"
+        "2.83.0"
+      ]
+    },
+    {
+      "name": "bat",
+      "url": "https://github.com/pauloedurezende/asdf-bat.git",
+      "default": "0.26.1",
+      "versions": [
+        "0.26.1"
+      ]
+    },
+    {
+      "name": "bazelisk",
+      "url": "https://github.com/josephtate/asdf-bazelisk.git",
+      "default": "1.29.0",
+      "versions": [
+        "1.28.1",
+        "1.29.0"
       ]
     },
     {
       "name": "chezmoi",
       "url": "https://github.com/joke/asdf-chezmoi.git",
-      "default": "2.70.5",
+      "default": "2.71.0",
       "versions": [
-        "2.70.5"
+        "2.70.5",
+        "2.71.0"
       ]
     },
     {
@@ -29,6 +47,9 @@
       "url": "https://github.com/kompiro/asdf-fzf.git",
       "default": "0.74.0",
       "versions": [
+        "0.23.1",
+        "0.67.0",
+        "0.73.1",
         "0.74.0"
       ]
     },
@@ -37,6 +58,7 @@
       "url": "https://github.com/bartlomiejdanek/asdf-github-cli.git",
       "default": "2.96.0",
       "versions": [
+        "2.86.0",
         "2.95.0",
         "2.96.0"
       ]
@@ -44,8 +66,11 @@
     {
       "name": "golang",
       "url": "https://github.com/asdf-community/asdf-golang.git",
-      "default": "1.26.4",
+      "default": "1.26.5",
       "versions": [
+        "1.25.3",
+        "1.26.0",
+        "1.26.2",
         "1.26.4",
         "1.26.5"
       ]
@@ -53,9 +78,37 @@
     {
       "name": "helm",
       "url": "https://github.com/Antiarchitect/asdf-helm.git",
-      "default": "4.2.2",
+      "default": "4.2.3",
       "versions": [
-        "4.2.2"
+        "4.1.1",
+        "4.2.2",
+        "4.2.3"
+      ]
+    },
+    {
+      "name": "hugo",
+      "url": "https://github.com/NeoHsu/asdf-hugo.git",
+      "default": "0.164.0",
+      "versions": [
+        "0.160.1",
+        "0.164.0"
+      ]
+    },
+    {
+      "name": "jless",
+      "url": "https://github.com/jc00ke/asdf-jless.git",
+      "default": "0.9.0",
+      "versions": [
+        "0.9.0"
+      ]
+    },
+    {
+      "name": "jq",
+      "url": "https://github.com/lsanwick/asdf-jq.git",
+      "default": "1.8.2",
+      "versions": [
+        "1.8.1",
+        "1.8.2"
       ]
     },
     {
@@ -63,6 +116,7 @@
       "url": "https://github.com/looztra/asdf-k9s.git",
       "default": "0.51.0",
       "versions": [
+        "0.50.16",
         "0.51.0"
       ]
     },
@@ -71,7 +125,17 @@
       "url": "https://github.com/bjw-s/asdf-krew.git",
       "default": "0.5.0",
       "versions": [
+        "0.4.5",
         "0.5.0"
+      ]
+    },
+    {
+      "name": "kubecolor",
+      "url": "https://github.com/dex4er/asdf-kubecolor.git",
+      "default": "0.6.0",
+      "versions": [
+        "0.5.3",
+        "0.6.0"
       ]
     },
     {
@@ -79,6 +143,7 @@
       "url": "https://github.com/asdf-community/asdf-kubectl.git",
       "default": "1.36.2",
       "versions": [
+        "1.35.1",
         "1.36.2"
       ]
     },
@@ -87,27 +152,45 @@
       "url": "https://github.com/sechmann/asdf-kubelogin.git",
       "default": "0.2.19",
       "versions": [
+        "0.2.14",
         "0.2.18",
         "0.2.19"
       ]
     },
     {
+      "name": "mdvi",
+      "url": "/home/pahealy/dev/github.com/phealy/asdf-mdvi/.",
+      "default": null,
+      "versions": []
+    },
+    {
+      "name": "mirrord",
+      "url": "https://github.com/metalbear-co/asdf-mirrord.git",
+      "default": "3.233.0",
+      "versions": [
+        "3.188.2",
+        "3.233.0"
+      ]
+    },
+    {
       "name": "nodejs",
       "url": "https://github.com/asdf-vm/asdf-nodejs.git",
-      "default": "26.4.0",
+      "default": "26.5.0",
       "versions": [
-        "26.4.0"
+        "24.13.1",
+        "25.4.0",
+        "25.6.1",
+        "26.5.0"
       ]
     },
     {
       "name": "ohmyposh",
       "url": "https://github.com/splinter98/asdf-ohmyposh.git",
-      "default": "29.21.0",
+      "default": "29.31.0",
       "versions": [
         "29.17.0",
         "29.18.0",
-        "29.19.0",
-        "29.21.0"
+        "29.31.0"
       ]
     },
     {
@@ -123,7 +206,36 @@
       "url": "https://github.com/danhper/asdf-python.git",
       "default": "3.14.6t",
       "versions": [
+        "3.14.0t",
+        "3.14.3t",
         "3.14.6t"
+      ]
+    },
+    {
+      "name": "rust",
+      "url": "https://github.com/code-lever/asdf-rust.git",
+      "default": "1.97.0",
+      "versions": [
+        "1.93.1",
+        "1.97.0"
+      ]
+    },
+    {
+      "name": "shellcheck",
+      "url": "https://github.com/luizm/asdf-shellcheck.git",
+      "default": "0.11.0",
+      "versions": [
+        "0.11.0",
+        "0.9.0"
+      ]
+    },
+    {
+      "name": "shfmt",
+      "url": "https://github.com/luizm/asdf-shfmt.git",
+      "default": "3.13.1",
+      "versions": [
+        "3.13.1",
+        "3.6.0"
       ]
     },
     {
@@ -137,11 +249,18 @@
     {
       "name": "uv",
       "url": "https://github.com/asdf-community/asdf-uv.git",
-      "default": "0.11.26",
+      "default": "0.11.28",
       "versions": [
         "0.11.24",
-        "0.11.25",
-        "0.11.26"
+        "0.11.28"
+      ]
+    },
+    {
+      "name": "websocat",
+      "url": "https://github.com/bdellegrazie/asdf-websocat.git",
+      "default": "1.14.1",
+      "versions": [
+        "1.14.1"
       ]
     },
     {
@@ -149,6 +268,7 @@
       "url": "https://github.com/sudermanjr/asdf-yq.git",
       "default": "4.53.3",
       "versions": [
+        "4.52.2",
         "4.53.3"
       ]
     }

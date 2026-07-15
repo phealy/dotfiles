@@ -7,7 +7,7 @@
 {{- else if eq .chezmoi.username "pahealy" -}}
     {{- $machineType = promptChoiceOnce . "machineType" "Is this a personal or work machine?" $machineTypes "personal" -}}
 {{- end -}}
-{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" | quote -}}
+{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "chezmoi-age" "encrypt.key" -}}
 {{- $email := "" -}}
 {{- if eq $machineType "personal" -}}
     {{- $email = "phealy@phealy.com" -}}
