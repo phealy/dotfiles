@@ -24,12 +24,12 @@ fi
 [ -d ~/.bash_completion.d ] && for c in ~/.bash_completion.d/*; do source $c; done
 [ -f /etc/bash_completion.d/azure_cli ] && source /etc/bash_completion.d/azure_cli 2>/dev/null
 # }}}
-# fzf {{{
-[[ -x "$(command -v asdf)" && -x "$(command -v fzf)" ]] && {
-    source $(asdf where fzf)/shell/key-bindings.bash
-    source $(asdf where fzf)/shell/completion.bash
-}
-# }}}
+## fzf {{{
+#[[ -x "$(command -v asdf)" && -x "$(command -v fzf)" ]] && {
+#    source $(asdf where fzf)/shell/key-bindings.bash
+#    source $(asdf where fzf)/shell/completion.bash
+#}
+## }}}
 # powerline {{{
 command -v powerline-daemon &>/dev/null && {
   powerline-daemon -q

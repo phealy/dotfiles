@@ -30,7 +30,7 @@ def main():
         stderr=subprocess.PIPE, text=True,
     )
     for line in proc.stderr:
-        if "is deprecated in" not in line or not line.startswith("Warning: "):
+        if "deprecated" not in line and not line.startswith("Warning: "):
             sys.stderr.write(line)
     sys.exit(proc.wait())
 

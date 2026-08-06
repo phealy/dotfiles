@@ -8,3 +8,6 @@ bash --login --noprofile --norc -t -c '. ~/.commonrc; export -p' | sed -e 's/dec
 . $TMPFILE
 rm $TMPFILE
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+SHELLNAME="$(basename "$(printf '%s' "$SHELL")")"
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path "${SHELLNAME}")"

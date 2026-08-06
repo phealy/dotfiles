@@ -24,10 +24,15 @@
 	allowedDomain = visualstudio.com
 	allowedDomain = dev.azure.com
 	allowedDomain = goproxyprod.goms.io
+[azureCliCredentialHelper "https://dev.azure.com"]
+	resource = https://tfsprodwus24.visualstudio.com
+	tenant = 72f988bf-86f1-41af-91ab-2d7cd011db47
 [azureCliCredentialHelper "https://msazure.visualstudio.com"]
 	resource = https://tfsprodwus24.visualstudio.com
+	tenant = 72f988bf-86f1-41af-91ab-2d7cd011db47
 [azureCliCredentialHelper "https://goproxyprod.goms.io"]
 	resource = https://microsoft.onmicrosoft.com/AKSGoProxyMSFT
+	tenant = 72f988bf-86f1-41af-91ab-2d7cd011db47
 {{- end }}
 {{- if and (eq .machineType "work") (not (empty (lookPath "git-credential-manager"))) }}
 [credential "https://dev.azure.com"]

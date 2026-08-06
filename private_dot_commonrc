@@ -55,7 +55,6 @@ _path_prepend $HOME/.local/bin
 _path_prepend $HOME/.krew/bin
 _path_prepend $HOME/.opencode/bin
 _path_prepend $HOME/.cdp/cdecli
-_path_prepend "${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
 command -v wslpath &>/dev/null && {
     ln -sf "$(wslpath -u 'C:\Windows\System32\clip.exe')" $HOME/.local/bin/clip
     ln -sf "$(wslpath -u 'C:\Windows\System32\clip.exe')" $HOME/.local/bin/clip.exe
@@ -111,6 +110,32 @@ function update-kubeconfig {
 }
 update-kubeconfig
 # }}}
+# Kubectl aliases {{{
+command -v kubecolor &>/dev/null && alias ${ZSH_VERSION:+-g} kubectl=kubecolor
+alias ${ZSH_VERSION:+-g} kak='kubectl apply -k'
+alias ${ZSH_VERSION:+-g} kctx='kubectl ctx'
+alias ${ZSH_VERSION:+-g} kfqdn="kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.server}' | sed -e 's!https\?://\(.*\):[0-9]\+/\?!\1!g'"
+alias ${ZSH_VERSION:+-g} kga='kubectl get-all'
+alias ${ZSH_VERSION:+-g} kgca='kubectl get-all -CA'
+alias ${ZSH_VERSION:+-g} kgno='kubectl get nodes -o wide -L kubernetes.io/arch -L node.kubernetes.io/instance-type -L kubernetes.azure.com/mode -L topology.kubernetes.io/zone'
+alias ${ZSH_VERSION:+-g} kgp='kubectl get pods -o wide'
+alias ${ZSH_VERSION:+-g} kgpa='kubectl get pods -A -o wide'
+alias ${ZSH_VERSION:+-g} kafr='kubectl apply -R -f'
+alias ${ZSH_VERSION:+-g} kd='kubectl describe'
+alias ${ZSH_VERSION:+-g} kdel='kubectl delete'
+alias ${ZSH_VERSION:+-g} ke='kubectl edit'
+alias ${ZSH_VERSION:+-g} kg='kubectl get'
+alias ${ZSH_VERSION:+-g} kk='kubectl kustomize'
+alias ${ZSH_VERSION:+-g} ksk="cd ~/dev/github.com/kubernetes/kubernetes"
+alias ${ZSH_VERSION:+-g} klck='kubelogin convert-kubeconfig -l azurecli'
+alias ${ZSH_VERSION:+-g} knosh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-shell -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias ${ZSH_VERSION:+-g} knossh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-ssh -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias ${ZSH_VERSION:+-g} knoser="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-serial -n kube-system {1})+abort' --header-lines=1 --height=25%"
+alias ${ZSH_VERSION:+-g} kns='kubectl ns'
+alias ${ZSH_VERSION:+-g} kr='kubectl retina'
+alias ${ZSH_VERSION:+-g} krc='kubectl retina capture'
+alias ${ZSH_VERSION:+-g} ks='kustomize'
+# }}}
 # Azure CLI aliases {{{
 command -v az &>/dev/null && {
     alias azaksgc="CONTEXT=\$(az aks list -o table | fzf --bind 'enter:execute(az aks get-credentials --overwrite --only-show-errors -n {1} -f ~/.kube/config)+execute(echo {1})+abort' --header-lines=2); kubectl ctx \$CONTEXT"
@@ -161,38 +186,21 @@ alias cw='code -w'
 alias crw='code -rw'
 alias d='docker'
 alias dc='docker-compose'
-alias dr='direnv reload'
 alias exp='/mnt/c/Windows/explorer.exe'
 alias explorer='/mnt/c/Windows/explorer.exe'
 alias ez='exec zsh'
 alias fa='[[ -z "$POWERLINE_CONFIG_OVERRIDES" ]] && export POWERLINE_CONFIG_OVERRIDES="common.default_top_theme=ascii" || unset POWERLINE_CONFIG_OVERRIDES'
 alias fixpaste="bash -c \"printf '\e[?2004l'\""
-alias kak='kubectl apply -k'
-alias kctx='kubectl ctx'
-alias ${ZSH_VERSION:+-g} kfqdn="kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.server}' | sed -e 's!https\?://\(.*\):[0-9]\+/\?!\1!g'"
-alias ${ZSH_VERSION:+-g} kga='kubectl get-all'
-alias ${ZSH_VERSION:+-g} kgca='kubectl get-all -CA'
-alias ${ZSH_VERSION:+-g} kgno='kubectl get nodes -o wide -L kubernetes.io/arch -L node.kubernetes.io/instance-type -L kubernetes.azure.com/mode -L topology.kubernetes.io/zone'
-alias ${ZSH_VERSION:+-g} kgp='kubectl get pods -o wide'
-alias ${ZSH_VERSION:+-g} kgpa='kubectl get pods -A -o wide'
-alias kafr='kubectl apply -R -f'
-alias kdel='kubectl delete'
-alias ke='kubectl edit'
-alias kk='kubectl kustomize'
-alias ksk="cd ~/dev/github.com/kubernetes/kubernetes"
-alias klck='kubelogin convert-kubeconfig -l azurecli'
-alias knosh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-shell -n kube-system {1})+abort' --header-lines=1 --height=25%"
-alias knossh="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-ssh -n kube-system {1})+abort' --header-lines=1 --height=25%"
-alias knoser="FZF_DEFAULT_COMMAND='kubectl get nodes -o wide' fzf --no-mouse --bind 'enter:execute(kubectl node-serial -n kube-system {1})+abort' --header-lines=1 --height=25%"
-alias kns='kubectl ns'
-alias kr='kubectl retina'
-alias krc='kubectl retina capture'
-alias ks='kustomize'
 alias l='ls -CFh --group-directories-first --color'
 alias la='ls -Ah --group-directories-first --color'
 alias ll='ls -lFh --group-directories-first --color'
 alias ls='ls -CFh --group-directories-first --color'
 alias lla='ls -alFh'
+alias m='mise'
+alias ms='mise search'
+alias mu='mise use'
+alias mug='mise use --global'
+alias mup='mise upgrade'
 alias omp='oh-my-posh'
 command -v open &>/dev/null || {{ alias open="xdg-open" }}
 alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'

@@ -6,8 +6,6 @@ typeset -Ug path PATH
 # }}}
 # Remove WSL directories from PATH temporarily {{{
 if [[ ! -z "${WSL_INTEROP}" ]]; then
-  declare -a WSLPATHS
-  WSLPATHS=$(mount | awk '/9p/ { print $3 }')
   FULLPATH="$PATH"
   PATH=${(j.:.)path:#*/[a-z]/*}
 fi
@@ -130,11 +128,10 @@ plugins=(
     vscode
     vi-mode
 )
-(($+commands[asdf])) && plugins+=(asdf)
+(($+commands[mise])) && plugins+=(mise)
 (($+commands[fzf])) && plugins+=(fzf)
 (($+commands[git])) && plugins+=(git)
 (($+commands[kubectl])) && plugins+=(kubectl)
-(($+commands[direnv])) && plugins+=(direnv)
 # Only load these plugins outside VS code, as they mess up its terminal
 # if [[ -z "$VSCODE_IPC_HOOK_CLI" ]]; then
   plugins+=(
@@ -160,13 +157,14 @@ fi
 # Source common aliases and such {{{
 source $HOME/.commonrc
 # }}}
-# Set ASDF settings {{{
-. ${ASDF_DATA_DIR:-$HOME/.asdf}/plugins/golang/set-env.zsh
+# Set mise settings {{{
+eval "$(mise activate zsh)"
 # }}}
 # oh-my-posh {{{
 [[ -z "$DISABLE_OMP" ]] && (($+commands[oh-my-posh])) && eval $(oh-my-posh init zsh --config=$HOME/.omp.yaml) || {
   printf "oh-my-posh not found.\n" >&2
 }
 # }}}
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 # vim:foldmethod=marker:foldlevel=0:syntax=zsh filetype=zsh
