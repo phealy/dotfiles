@@ -24,6 +24,12 @@ oh-my-posh = "latest"
 websocat = "latest"
 node = "latest"
 hugo = "latest"
+bat = "latest"
+cargo-binstall = "latest"
+"github:benjajaja/mdfried" = "latest"
+tmux = "latest"
+ripgrep = "latest"
+"github:Azure/unbounded" = { version = "latest", matching = "kubectl-unbounded" }
 
 [settings]
 minimum_release_age = "0"
