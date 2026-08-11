@@ -1,5 +1,5 @@
 # start tmux {{{
-[[ $- == *i* && -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && exec $HOME/.local/bin/tmx
+[[ $- == *i* && -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && exec $HOME/.local/bin/tmx
 # }}}
 # Set path to require unique entries {{{
 typeset -Ug path PATH
@@ -131,7 +131,7 @@ plugins=(
 (($+commands[mise])) && plugins+=(mise)
 (($+commands[fzf])) && plugins+=(fzf)
 (($+commands[git])) && plugins+=(git)
-(($+commands[kubectl])) && plugins+=(kubectl)
+(($+commands[kubectl])) && plugins+=('kubectl')
 # Only load these plugins outside VS code, as they mess up its terminal
 # if [[ -z "$VSCODE_IPC_HOOK_CLI" ]]; then
   plugins+=(

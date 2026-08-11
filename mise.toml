@@ -30,6 +30,7 @@ cargo-binstall = "latest"
 tmux = "latest"
 ripgrep = "latest"
 "github:Azure/unbounded" = { version = "latest", matching = "kubectl-unbounded" }
+copilot = "latest"
 
 [settings]
 minimum_release_age = "0"

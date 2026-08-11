@@ -9,15 +9,15 @@ function _path_prepend {
 }
 # }}}
 # cmd function {{{
-command -v wslpath &>/dev/null && {
-  cmd() {
-    CMD=$1
-    shift;
-    ARGS=$@
-    WIN_PWD=`wslpath -w "$(pwd)"`
-    $(wslpath -u 'C:\Windows\System32\cmd.exe') /c "pushd ${WIN_PWD} && ${CMD} ${ARGS}"
-  }
-}
+#command -v wslpath &>/dev/null && {
+  #cmd() {
+    #CMD=$1
+    #shift;
+    #ARGS=$@
+    #WIN_PWD=`wslpath -w "$(pwd)"`
+    #$(wslpath -u 'C:\Windows\System32\cmd.exe') /c "pushd ${WIN_PWD} && ${CMD} ${ARGS}"
+  #}
+#}
 # }}}
 # ssh-agent {{{
 if [[ ! -z "${WSL_INTEROP}" ]]; then
@@ -76,7 +76,7 @@ command -v powerline-daemon &>/dev/null && {
 # start tmux {{{
 case $- in
     *i*) 
-         [[ -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && {
+         [[ -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && {
              exec $HOME/.local/bin/tmx
          }
          ;;
@@ -93,7 +93,11 @@ export CDPATH=~
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export GPG_TTY=${TTY}
 export LC_COLLATE=C # Case sensitive sort
-[[ -z "$VSCODE_IPC_HOOK_CLI" ]] && { export EDITOR="vim"; } || { export EDITOR="code-wait"; }
+if [[ ! -z "$VSCODE_IPC_HOOK_CLI" || "$TERM_PROGRAM" == "vscode" ]]; then
+    export EDITOR="code --wait"
+elif command -v "vim" &>/dev/null; then
+    export EDITOR="vim"
+fi
 export KUBECTL_NODE_SHELL_IMAGE=mcr.microsoft.com/cbl-mariner/base/core:1.0
 export KUBECTL_NODE_SHELL_POD_MEMORY=512m
 export NMON=cmdtn
@@ -111,7 +115,10 @@ function update-kubeconfig {
 update-kubeconfig
 # }}}
 # Kubectl aliases {{{
-command -v kubecolor &>/dev/null && alias ${ZSH_VERSION:+-g} kubectl=kubecolor
+command -v kubecolor &>/dev/null && {
+    alias ${ZSH_VERSION:+-g} kubectl=kubecolor
+    compdef kubecolor=kubectl
+}
 alias ${ZSH_VERSION:+-g} kak='kubectl apply -k'
 alias ${ZSH_VERSION:+-g} kctx='kubectl ctx'
 alias ${ZSH_VERSION:+-g} kfqdn="kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.server}' | sed -e 's!https\?://\(.*\):[0-9]\+/\?!\1!g'"
@@ -179,7 +186,7 @@ command -v wslpath &>/dev/null && {
     alias teeclip="tee >($(wslpath -u 'C:\Windows\System32\clip.exe'))"
 }
 #alias code="/c/Users/$USERNAME/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe"
-command -v code-insiders >/dev/null 2>&1 && { alias code=code-insiders; }
+#command -v code-insiders >/dev/null 2>&1 && { alias code=code-insiders; }
 alias c='code'
 alias cr='code -r'
 alias cw='code -w'
@@ -202,7 +209,7 @@ alias mu='mise use'
 alias mug='mise use --global'
 alias mup='mise upgrade'
 alias omp='oh-my-posh'
-command -v open &>/dev/null || {{ alias open="xdg-open" }}
+command -v open &>/dev/null || alias open="xdg-open"
 alias ressh='ssh -o ConnectTimeout=10 -o ConnectionAttempts=30 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no'
 alias sshi='ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
 alias winclip='powershell.exe -c '\''$stdin = @($input); if ($stdin) { Set-Clipboard $stdin } else { Get-Clipboard }'\'
