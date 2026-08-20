@@ -12,13 +12,12 @@ k9s:
     enableMouse: false
     headless: true
     logoless: true
-    crumbsless: true
+    crumbsless: false
     splashless: true
-    reactive: false
+    reactive: true
     noIcons: false
-    defaultsToFullScreen: true
-    useFullGVRTitle: false
-  skipLatestRevCheck: false
+  skin: subtle
+  skipLatestRevCheck: true
   disablePodCounting: false
   shellPod:
     image: busybox:1.35.0

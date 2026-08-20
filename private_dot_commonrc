@@ -52,7 +52,6 @@ fi
 # }}}
 # path {{{
 _path_prepend $HOME/.local/bin
-_path_prepend $HOME/.krew/bin
 _path_prepend $HOME/.opencode/bin
 _path_prepend $HOME/.cdp/cdecli
 command -v wslpath &>/dev/null && {

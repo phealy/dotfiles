@@ -82,7 +82,7 @@ blocks:
           type: executiontime
           style: diamond
         - leading_diamond: <p:splitForeground,parentBackground></>
-          template: ' 󰠅 {{ if eq .Name "AKS Long Running Things" }}AKS LRT{{ else if eq .Name "Azure Container Service - Test (AKS Standalone)" }}AKS Test 8eca{{ else if eq .Name "AKS Underlay tmedev - canadacentral" }}AKSU TME CC{{ else }}{{ .Name }}{{ end }}{{ $config := "" }}{{ $rg := "" }}{{ if ne .Env.AZURE_CONFIG_DIR "" }}{{ $config = print (.Env.AZURE_CONFIG_DIR) "/config" }}{{ else }}{{ $config = print (.Env.HOME) "/.azure/config" }}{{ end }}{{ $rg = (split " = " (regexFind "group = (.*)" (readFile $config)))._1 }}{{ if $rg }}{{ print "/" $rg }}{{ end }} '
+          template: ' 󰠅 {{ if eq .Name "AKS Long Running Things" }}AKS LRT{{ else if eq .Name "Azure Container Service - Test (AKS Standalone)" }}AKS Test 8eca{{ else if eq .Name "AKS Underlay tmedev - canadacentral" }}AKSU TME CC{{ else if eq .Name "Azure VMware Solution (Service) - Stage-EastUS2-P03 (BL22-P03)"}}AVS{{ else }}{{ .Name }}{{ end }}{{ $config := "" }}{{ $rg := "" }}{{ if ne .Env.AZURE_CONFIG_DIR "" }}{{ $config = print (.Env.AZURE_CONFIG_DIR) "/config" }}{{ else }}{{ $config = print (.Env.HOME) "/.azure/config" }}{{ end }}{{ $rg = (split " = " (regexFind "group = (.*)" (readFile $config)))._1 }}{{ if $rg }}{{ print "/" $rg }}{{ end }} '
           foreground: '#0087d7'
           background: p:defaultBackground
           type: az

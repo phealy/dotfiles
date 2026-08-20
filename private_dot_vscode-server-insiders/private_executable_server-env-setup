@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -eu
+set -e
 
 TMPFILE=$(mktemp)
 trap 'rm $TMPFILE' EXIT
@@ -10,4 +10,6 @@ rm $TMPFILE
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 SHELLNAME="$(basename "$(printf '%s' "$SHELL")")"
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path "${SHELLNAME}")"
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    . "$(code --locate-shell-integration-path "${SHELLNAME}")"
+fi

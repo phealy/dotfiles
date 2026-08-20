@@ -165,6 +165,12 @@ eval "$(mise activate zsh)"
   printf "oh-my-posh not found.\n" >&2
 }
 # }}}
+# Completion for various programs {{{
+command -v stern &>/dev/null && source <(stern --completion=zsh)
+for prog in kubectl; do
+    command -v "$prog" &>/dev/null && source <($prog completion zsh)
+done
+# }}}
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 # vim:foldmethod=marker:foldlevel=0:syntax=zsh filetype=zsh
