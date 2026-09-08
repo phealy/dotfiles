@@ -14,6 +14,7 @@
 "krew:ns" = "latest"
 "krew:retina" = "latest"
 "krew:sniff" = "latest"
+"krew:tree" = "latest"
 "krew:virt" = "latest"
 argocd = "latest"
 azure = { version = "latest", uvx_args = "--prerelease=allow" }
@@ -49,3 +50,6 @@ yq = "latest"
 
 [settings]
 minimum_release_age = "0"
+
+[plugins]
+krew = "https://github.com/soupglasses/mise-krew"
