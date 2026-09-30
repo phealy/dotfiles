@@ -1,0 +1,12 @@
+aliases: null
+apiVersion: kubectl.config.k8s.io/v1beta1
+defaults:
+- command: apply
+  options:
+  - default: "true"
+    name: server-side
+- command: delete
+  options:
+  - default: "false"
+    name: interactive
+kind: Preference

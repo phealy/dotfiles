@@ -1,5 +1,13 @@
 # start tmux {{{
-[[ $- == *i* && -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && exec $HOME/.local/bin/tmx
+if [[ $- == *i* 
+      && -x "$(command -v tmux)" && -z "$TMUX" 
+      && -z "$SSH_CONNECTION" 
+      && -z "$AZURE_HTTP_USER_AGENT" 
+      && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" 
+      && "$XDG_VTNR" -ne 6 ]] \
+      && ! (pstree -s $$ | grep -qw copilotd); then
+    exec $HOME/.local/bin/tmx
+fi
 # }}}
 # Set path to require unique entries {{{
 typeset -Ug path PATH
@@ -170,6 +178,8 @@ command -v stern &>/dev/null && source <(stern --completion=zsh)
 for prog in kubectl; do
     command -v "$prog" &>/dev/null && source <($prog completion zsh)
 done
+autoload -Uz _kubectl_extra_plugins
+compdef _kubectl_extra_plugins kubectl
 # }}}
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 

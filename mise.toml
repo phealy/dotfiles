@@ -1,4 +1,8 @@
+[tool_alias]
+go = "http:ms-go"
+
 [tools]
+go = { version = "latest", version_list_url = "https://api.github.com/repos/microsoft/go/releases?per_page=100", version_json_path = ".[].tag_name", version_order = "semver", url = "https://aka.ms/golang/release/latest/go{{version}}.linux-amd64.tar.gz", checksum_url = "https://aka.ms/golang/release/latest/go{{version}}.linux-amd64.tar.gz.sha256", strip_components = "1", bin_path = "bin" }
 "aqua:kubevirt/kubevirt/virtctl" = "latest"
 "github:Azure/AKSFlexNode" = "latest"
 "github:Azure/unbounded" = { version = "latest", matching = "kubectl-unbounded" }
@@ -25,7 +29,6 @@ copilot-cli = "latest"
 direnv = "latest"
 fzf = "latest"
 github-cli = "latest"
-go = "latest"
 helm = "latest"
 hugo = "latest"
 jq = "latest"
@@ -47,9 +50,15 @@ tmux = "latest"
 uv = "latest"
 websocat = "latest"
 yq = "latest"
+"go:sigs.k8s.io/yaml/yamlfmt" = "latest"
+"github:microsoft/tgrep" = "latest"
+"go:github.com/rhysd/actionlint/cmd/actionlint" = "v1.7.12"
+"github:gastownhall/beads" = "latest"
+"github:/microsoft/go" = "latest"
 
 [settings]
 minimum_release_age = "0"
 
 [plugins]
 krew = "https://github.com/soupglasses/mise-krew"
+

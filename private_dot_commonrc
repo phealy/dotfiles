@@ -73,13 +73,13 @@ command -v powerline-daemon &>/dev/null && {
 }
 # }}}
 # start tmux {{{
-case $- in
-    *i*) 
-         [[ -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && {
-             exec $HOME/.local/bin/tmx
-         }
-         ;;
-esac
+#case $- in
+#    *i*) 
+#         [[ -x "$(command -v tmux)" && -z "$TMUX" && -z "$SSH_CONNECTION" && -z "$AZURE_HTTP_USER_AGENT" && -z "$VSCODE_INJECTION" && -z "$VSCODE_IPC_HOOK_CLI" && $XDG_VTNR -ne 6 ]] && {
+#             #exec $HOME/.local/bin/tmx
+#         }
+#         ;;
+#esac
 # }}}
 # make less more friendly for non-text input files, see lesspipe(1) {{{
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
